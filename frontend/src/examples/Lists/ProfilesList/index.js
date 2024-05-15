@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -23,10 +23,10 @@ import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
+import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
+import MDTypography from "components/MDTypography";
 
 function ProfilesList({ title, profiles, shadow }) {
   const renderProfiles = profiles.map(({ image, name, description, action }) => (

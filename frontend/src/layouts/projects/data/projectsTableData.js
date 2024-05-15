@@ -36,7 +36,12 @@ export default function data() {
   };
   return {
     columns: [
-      { Header: "Project Name", accessor: "projectName", width: "30%", align: "left" },
+      {
+        Header: "Project Name",
+        accessor: "projectName",
+        width: "30%",
+        align: "left",
+      },
       { Header: "Description", accessor: "description", align: "left" },
       { Header: "Location", accessor: "location", align: "left" },
       { Header: "Actions", accessor: "actions", align: "center" },

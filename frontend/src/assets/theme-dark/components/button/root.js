@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -14,8 +14,8 @@ Coded by www.creative-tim.com
 */
 
 // Material Dashboard 2 React Base Styles
-import typography from "assets/theme-dark/base/typography";
 import borders from "assets/theme-dark/base/borders";
+import typography from "assets/theme-dark/base/typography";
 
 // Material Dashboard 2 React Helper Functions
 import pxToRem from "assets/theme-dark/functions/pxToRem";

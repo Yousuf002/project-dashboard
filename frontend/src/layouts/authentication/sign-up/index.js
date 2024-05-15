@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -22,9 +22,9 @@ import Checkbox from "@mui/material/Checkbox";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
+import MDTypography from "components/MDTypography";
 
 // Authentication layout components
 import CoverLayout from "layouts/authentication/components/CoverLayout";

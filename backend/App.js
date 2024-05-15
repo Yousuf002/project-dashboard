@@ -8,7 +8,9 @@ app.use(cors());
 app.use(express.json());
 
 const projectRouter = require('./routes/Project');
+const fileRouter = require('./routes/File');
 app.use('/projects', projectRouter);
+app.use('/files', fileRouter);
 
 mongoose.connect('mongodb://localhost:27017').then(() => {
     console.log('Connected to database');

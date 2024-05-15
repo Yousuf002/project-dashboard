@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -25,8 +25,8 @@ import Fade from "@mui/material/Fade";
 import MDBox from "components/MDBox";
 
 // Custom styles for the MDAlert
-import MDAlertRoot from "components/MDAlert/MDAlertRoot";
 import MDAlertCloseIcon from "components/MDAlert/MDAlertCloseIcon";
+import MDAlertRoot from "components/MDAlert/MDAlertRoot";
 
 function MDAlert({ color, dismissible, children, ...rest }) {
   const [alertStatus, setAlertStatus] = useState("mount");

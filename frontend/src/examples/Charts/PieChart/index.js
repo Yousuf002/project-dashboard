@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -19,8 +19,8 @@ import { useMemo } from "react";
 import PropTypes from "prop-types";
 
 // react-chartjs-2 components
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from "chart.js";
 import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 // @mui material components
 import Card from "@mui/material/Card";

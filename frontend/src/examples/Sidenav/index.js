@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -16,21 +16,21 @@ Coded by www.creative-tim.com
 import { useEffect } from "react";
 
 // react-router-dom components
-import { useLocation, NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
 
 // @mui material components
-import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
-import Link from "@mui/material/Link";
 import Icon from "@mui/material/Icon";
+import Link from "@mui/material/Link";
+import List from "@mui/material/List";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
+import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import SidenavCollapse from "examples/Sidenav/SidenavCollapse";
@@ -41,10 +41,10 @@ import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
 
 // Material Dashboard 2 React context
 import {
-  useMaterialUIController,
   setMiniSidenav,
   setTransparentSidenav,
   setWhiteSidenav,
+  useMaterialUIController,
 } from "context";
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {

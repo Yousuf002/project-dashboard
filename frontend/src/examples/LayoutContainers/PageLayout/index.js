@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -25,7 +25,7 @@ import PropTypes from "prop-types";
 import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React context
-import { useMaterialUIController, setLayout } from "context";
+import { setLayout, useMaterialUIController } from "context";
 
 function PageLayout({ background, children }) {
   const [, dispatch] = useMaterialUIController();

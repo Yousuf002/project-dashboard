@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -124,4 +124,4 @@ function collapseText(theme, ownerState) {
   };
 }
 
-export { collapseItem, collapseIconBox, collapseIcon, collapseText };
+export { collapseIcon, collapseIconBox, collapseItem, collapseText };

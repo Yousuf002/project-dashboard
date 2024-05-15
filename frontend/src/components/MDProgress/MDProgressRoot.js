@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -14,8 +14,8 @@ Coded by www.creative-tim.com
 */
 
 // @mui material components
-import { styled } from "@mui/material/styles";
 import LinearProgress from "@mui/material/LinearProgress";
+import { styled } from "@mui/material/styles";
 
 export default styled(LinearProgress)(({ theme, ownerState }) => {
   const { palette, functions } = theme;

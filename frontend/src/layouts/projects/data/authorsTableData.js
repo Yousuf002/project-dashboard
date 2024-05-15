@@ -6,7 +6,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -16,10 +16,10 @@ Coded by www.creative-tim.com
 */
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDBadge from "components/MDBadge";
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
 
 // Images
 import team2 from "assets/images/team-2.jpg";

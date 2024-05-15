@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -19,8 +19,8 @@ import { forwardRef } from "react";
 import PropTypes from "prop-types";
 
 // @mui material components
-import MenuItem from "@mui/material/MenuItem";
 import Link from "@mui/material/Link";
+import MenuItem from "@mui/material/MenuItem";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";

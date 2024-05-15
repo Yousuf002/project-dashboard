@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -13,26 +13,26 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // porp-types is a library for typechecking of props
 import PropTypes from "prop-types";
 
 // react-chartjs-2 components
-import { Line } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  LinearScale,
-  CategoryScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Legend,
-  Tooltip,
-  LineController,
-  BarController,
-  Filler,
+    BarController,
+    BarElement,
+    CategoryScale,
+    Chart as ChartJS,
+    Filler,
+    Legend,
+    LineController,
+    LineElement,
+    LinearScale,
+    PointElement,
+    Tooltip,
 } from "chart.js";
+import { Line } from "react-chartjs-2";
 
 // @mui material components
 import Card from "@mui/material/Card";

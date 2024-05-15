@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -14,14 +14,14 @@ Coded by www.creative-tim.com
 */
 
 // Material Dashboard 2 React base styles
-import colors from "assets/theme-dark/base/colors";
 import borders from "assets/theme-dark/base/borders";
 import boxShadows from "assets/theme-dark/base/boxShadows";
+import colors from "assets/theme-dark/base/colors";
 
 // Material Dashboard 2 React helper functions
 // import rgba from "assets/theme-dark/functions/rgba";
-import pxToRem from "assets/theme-dark/functions/pxToRem";
 import linearGradient from "assets/theme-dark/functions/linearGradient";
+import pxToRem from "assets/theme-dark/functions/pxToRem";
 
 const { white, gradients, grey, transparent } = colors;
 const { borderWidth } = borders;

@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -36,6 +36,8 @@ Coded by www.creative-tim.com
 */
 
 // Material Dashboard 2 React layouts
+import Files from "layouts/Files";
+import EditFileForm from "layouts/Files/editFile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import Billing from "layouts/billing";
@@ -49,6 +51,7 @@ import RTL from "layouts/rtl";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import CreateFileForm from "layouts/Files/createFile";
 
 const routes = [
   {
@@ -72,10 +75,25 @@ const routes = [
     name: "",
     key: "",
     icon: <Icon fontSize="small"></Icon>,
+    route: "/create-file",
+    component: <CreateFileForm />,
+  },
+  {
+    type: "none",
+    name: "",
+    key: "",
+    icon: <Icon fontSize="small"></Icon>,
     route: "/edit-project/:projectId", // Define the route with projectId parameter
     component: <EditProjectForm />,
   },
-
+  {
+    type: "none",
+    name: "",
+    key: "",
+    icon: <Icon fontSize="small"></Icon>,
+    route: "/files/edit-file/:fileId", // Define the route with projectId parameter
+    component: <EditFileForm />,
+  },
   {
     type: "collapse",
     name: "Projects",
@@ -86,9 +104,17 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Files",
+    key: "files",
+    icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/files",
+    component: <Files />,
+  },
+  {
+    type: "collapse",
     name: "Billing",
     key: "billing",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
+    icon: <Icon fontSize="small">table_view</Icon>,
     route: "/billing",
     component: <Billing />,
   },

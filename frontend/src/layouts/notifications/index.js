@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -16,20 +16,20 @@ Coded by www.creative-tim.com
 import { useState } from "react";
 
 // @mui material components
-import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 import MDAlert from "components/MDAlert";
+import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
+import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
+import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 
 function Notifications() {
   const [successSB, setSuccessSB] = useState(false);

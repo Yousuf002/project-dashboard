@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -13,30 +13,30 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
 
 // @mui material components
+import AppBar from "@mui/material/AppBar";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
-import AppBar from "@mui/material/AppBar";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import Icon from "@mui/material/Icon";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 
 // Material Dashboard 2 React components
+import MDAvatar from "components/MDAvatar";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDAvatar from "components/MDAvatar";
 
 // Material Dashboard 2 React base styles
 import breakpoints from "assets/theme/base/breakpoints";
 
 // Images
-import burceMars from "assets/images/bruce-mars.jpg";
 import backgroundImage from "assets/images/bg-profile.jpeg";
+import burceMars from "assets/images/bruce-mars.jpg";
 
 function Header({ children }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");

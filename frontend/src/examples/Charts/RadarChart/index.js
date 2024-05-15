@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -20,13 +20,13 @@ import PropTypes from "prop-types";
 
 // react-chartjs-2 components
 import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
+    Chart as ChartJS,
+    Filler,
+    Legend,
+    LineElement,
+    PointElement,
+    RadialLinearScale,
+    Tooltip,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
 

@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -17,8 +17,8 @@ Coded by www.creative-tim.com
 import PropTypes from "prop-types";
 
 // @mui material components
-import Link from "@mui/material/Link";
 import Icon from "@mui/material/Icon";
+import Link from "@mui/material/Link";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -69,7 +69,7 @@ function Footer({ company, links }) {
         by
         <Link href={href} target="_blank">
           <MDTypography variant="button" fontWeight="medium">
-            &nbsp;{name}&nbsp;
+            &nbsp;Yousuf Khan&nbsp;
           </MDTypography>
         </Link>
         for a better web.
@@ -99,12 +99,12 @@ function Footer({ company, links }) {
 
 // Setting default values for the props of Footer
 Footer.defaultProps = {
-  company: { href: "https://www.creative-tim.com/", name: "Creative Tim" },
+  company: { href: "https://yousuf002.github.io/My-Portfolio/", name: "Creative tim" },
   links: [
-    { href: "https://www.creative-tim.com/", name: "Creative Tim" },
-    { href: "https://www.creative-tim.com/presentation", name: "About Us" },
-    { href: "https://www.creative-tim.com/blog", name: "Blog" },
-    { href: "https://www.creative-tim.com/license", name: "License" },
+    { href: "https://yousuf002.github.io/My-Portfolio/", name: "Yousuf khan" },
+    { href: "", name: "About Us" },
+    { href: "", name: "Blog" },
+    { href: "", name: "License" },
   ],
 };
 

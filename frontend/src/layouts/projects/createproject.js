@@ -18,19 +18,20 @@ function CreateProjectForm() {
         location,
       });
 
-      // Reset form fields after successful submission
       setProjectName("");
       setDescription("");
       setLocation("");
 
       // Redirect to the /projects route after adding the project
-      window.location.href = "/projects";
+      //send alert
+      alert("Project added successfully!");
     } catch (error) {
       console.error("Error submitting form data:", error);
     }
   };
 
   return (
+    //add pagination
     <div className="create-project-form-container">
       <h2>Create New Project</h2>
       <form onSubmit={handleSubmit}>

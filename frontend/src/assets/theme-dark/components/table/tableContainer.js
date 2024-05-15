@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -14,9 +14,9 @@ Coded by www.creative-tim.com
 */
 
 // Material Dashboard 2 React base styles
-import colors from "assets/theme-dark/base/colors";
-import boxShadows from "assets/theme-dark/base/boxShadows";
 import borders from "assets/theme-dark/base/borders";
+import boxShadows from "assets/theme-dark/base/boxShadows";
+import colors from "assets/theme-dark/base/colors";
 
 const { background } = colors;
 const { md } = boxShadows;

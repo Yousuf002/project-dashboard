@@ -4,7 +4,7 @@
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2023 Creative tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -17,8 +17,8 @@ Coded by www.creative-tim.com
 import colors from "assets/theme-dark/base/colors";
 
 // Material Dashboard 2 React helper functions
-import rgba from "assets/theme-dark/functions/rgba";
 import pxToRem from "assets/theme-dark/functions/pxToRem";
+import rgba from "assets/theme-dark/functions/rgba";
 
 const { dark, transparent, white } = colors;
 
