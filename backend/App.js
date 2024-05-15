@@ -9,9 +9,10 @@ app.use(express.json());
 
 const projectRouter = require('./routes/Project');
 const fileRouter = require('./routes/File');
+const fileverificationRouter = require('./routes/FileVerification')
 app.use('/projects', projectRouter);
 app.use('/files', fileRouter);
-
+app.use('/file-verification', fileverificationRouter);
 mongoose.connect('mongodb://localhost:27017').then(() => {
     console.log('Connected to database');
 }).catch((error) => {

@@ -36,6 +36,8 @@ Coded by www.creative-tim.com
 */
 
 // Material Dashboard 2 React layouts
+import FileVerification from "layouts/FileVerification";
+import CreateFileVerificationForm from "layouts/FileVerification/addFileVerification";
 import Files from "layouts/Files";
 import EditFileForm from "layouts/Files/editFile";
 import SignIn from "layouts/authentication/sign-in";
@@ -83,6 +85,14 @@ const routes = [
     name: "",
     key: "",
     icon: <Icon fontSize="small"></Icon>,
+    route: "/create-file-verification",
+    component: <CreateFileVerificationForm />,
+  },
+  {
+    type: "none",
+    name: "",
+    key: "",
+    icon: <Icon fontSize="small"></Icon>,
     route: "/edit-project/:projectId", // Define the route with projectId parameter
     component: <EditProjectForm />,
   },
@@ -109,6 +119,14 @@ const routes = [
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/files",
     component: <Files />,
+  },
+  {
+    type: "collapse",
+    name: "Files Verification",
+    key: "files verification",
+    icon: <Icon fontSize="small">receipt_long</Icon>,
+    route: "/files-verification",
+    component: <FileVerification />,
   },
   {
     type: "collapse",
