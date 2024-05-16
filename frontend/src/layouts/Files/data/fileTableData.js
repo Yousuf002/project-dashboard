@@ -42,6 +42,7 @@ export default function data() {
       { Header: "Plot Type", accessor: "plotType", width: "20%", align: "left" },
       { Header: "Plot Size", accessor: "plotSize", width: "20%", align: "left" },
       { Header: "Project", accessor: "project", width: "20%", align: "left" }, // Add Project column
+      { Header: "Status", accessor: "status", width: "20%", align: "left" },
       { Header: "Actions", accessor: "actions", align: "center" },
     ],
 
@@ -51,6 +52,7 @@ export default function data() {
       plotType: file.PlotType,
       plotSize: file.PlotSize,
       project: file.Project.name, // Access the project name
+      status: file.FileStatus,
       actions: (
         <MDBox display="flex" justifyContent="center">
           <Link to={file._id ? `/files/edit-file/${file._id}` : "#"} className="edit-link">

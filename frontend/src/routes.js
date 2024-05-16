@@ -39,6 +39,7 @@ Coded by www.creative-tim.com
 import FileVerification from "layouts/FileVerification";
 import CreateFileVerificationForm from "layouts/FileVerification/addFileVerification";
 import Files from "layouts/Files";
+import FileForm from "layouts/Files/Fileform";
 import EditFileForm from "layouts/Files/editFile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
@@ -87,6 +88,14 @@ const routes = [
     icon: <Icon fontSize="small"></Icon>,
     route: "/create-file-verification",
     component: <CreateFileVerificationForm />,
+  },
+  {
+    type: "none",
+    name: "",
+    key: "",
+    icon: <Icon fontSize="small"></Icon>,
+    route: "/file-form/:fileId",
+    component: <FileForm />,
   },
   {
     type: "none",

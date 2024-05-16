@@ -1,27 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const File = require('../models/File');
+const Form = require('../models/Form');
 
 // POST route to create a new file object
 router.post('/create-file', async (req, res) => {
-    try {
-      // Check if the registration code already exists
-      const existingFile = await File.findOne({ RegistrationCode: req.body.RegistrationCode });
-      if (existingFile) {
-        return res.status(400).json({ message: 'Registration code already exists' });
-      }
-  
-      // Create a new file object using the request body
-      const newFile = new File(req.body);
-      // Save the new file object to the database
-      await newFile.save();
-      // Send a success response
-      res.status(201).json({ message: 'File object created successfully', File: newFile });
-    } catch (error) {
-      // If there's an error, send a 500 status code along with the error message
-      res.status(500).json({ message: 'Failed to create file object', error: error.message });
+  try {
+    // Check if the registration code already exists
+    const existingFile = await File.findOne({ RegistrationCode: req.body.RegistrationCode });
+    if (existingFile) {
+      return res.status(400).json({ message: 'Registration code already exists' });
     }
-  });
+
+    // Create a new file object using the request body
+    const newFile = new File({
+      ...req.body,
+      FormData: null, // Set FormData to null
+    });
+
+    // Save the new file object to the database
+    await newFile.save();
+
+    // Send a success response
+    res.status(201).json({ message: 'File object created successfully', File: newFile });
+  } catch (error) {
+    // If there's an error, send a 500 status code along with the error message
+    res.status(500).json({ message: 'Failed to create file object', error: error.message });
+  }
+});
+
 router.get('/get-all-files', async (req, res) => {
     try {
         const files = await File.find().populate('Project', 'name');
@@ -64,19 +71,33 @@ router.put('/edit-file/:id', async (req, res) => {
       res.status(500).json({ message: 'Failed to update file', error: error.message });
     }
   });
-  
-  
-  // Route to delete a file
-  router.delete('/delete-file/:id', async (req, res) => {
+  router.post('/update-file/:id', async (req, res) => {
+    const { id } = req.params;
+
     try {
-      const deletedFile = await File.findByIdAndDelete(req.params.id);
-      if (!deletedFile) {
-        return res.status(404).json({ message: 'File not found' });
-      }
-      res.status(200).json({ message: 'File deleted successfully' });
+        // Find the file by its ID
+        const file = await File.findById(id);
+        if (!file) {
+            return res.status(404).json({ message: 'File not found' });
+        }
+
+        // Update the file status to "In Process"
+        file.FileStatus = 'In Process';
+
+        // Add form data to the file
+        file.FormData = req.body;
+
+        // Save the updated file object
+        await file.save();
+
+        // Send a success response
+        res.status(200).json({ message: 'Form data added to file successfully', File: file });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to delete file', error: error.message });
+        // If there's an error, send a 500 status code along with the error message
+        res.status(500).json({ message: 'Failed to add form data to file', error: error.message });
     }
-  });
+});
+
   
-  module.exports = router;
+  
+    module.exports = router;

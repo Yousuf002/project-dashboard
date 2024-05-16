@@ -7,19 +7,15 @@ import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
-import fileVerificationTableData from "layouts/FileVerification/data/filesVerificationTableData";
+import FileVerificationTableData from "layouts/FileVerification/data/filesVerificationTableData"; // Import the FileVerificationTableData component
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
 function FileVerification() {
-  const { columns: fvColumns, rows: fvRows } = fileVerificationTableData(); // Assuming you have file verification data
-  // Change page
+  const { columns: fvColumns, rows: fvRows, search } = FileVerificationTableData(); // Destructure search from the return value of FileVerificationTableData
   const [currentPage, setCurrentPage] = useState(1);
-  // Set items per page
   const [itemsPerPage, setItemsPerPage] = useState(7);
-  // Paginate function
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  // Calculate index of the first and last item on the current page
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentRows = fvRows.slice(indexOfFirstItem, indexOfLastItem);
@@ -60,15 +56,14 @@ function FileVerification() {
                   entriesPerPage={false}
                   showTotalEntries={false}
                   noEndBorder
-                  // Apply custom styles to data fields
                   customCellStyles={{
                     fontFamily: "inherit",
                     fontWeight: "inherit",
                     fontSize: "inherit",
                     color: "inherit",
                   }}
+                  search={search} // Pass the search object to DataTable
                 />
-                {/* Pagination */}
                 <div>
                   <Button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
                     Previous

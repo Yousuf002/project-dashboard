@@ -1,28 +1,53 @@
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
+import Icon from "@mui/material/Icon";
+import axios from "axios";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
-import filesTableData from "layouts/Files/data/fileTableData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Files() {
-  const { columns: pColumns, rows: pRows } = filesTableData();
-  //change page
-  const [currentPage, setCurrentPage] = useState(1);
-  //set items on page
-  const [itemsPerPage, setItemsPerPage] = useState(7);
-  //paginate function
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  // Calculate index of the first and last item on the current page
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentRows = pRows.slice(indexOfFirstItem, indexOfLastItem);
+  const [files, setFiles] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [filteredRows, setFilteredRows] = useState([]);
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/files/get-all-files");
+        setFiles(response.data);
+        setFilteredRows(response.data);
+      } catch (error) {
+        console.error("Error fetching files:", error);
+      }
+    };
+
+    fetchFiles();
+  }, []);
+
+  const handleDelete = async (fileId) => {
+    try {
+      await axios.delete(`http://localhost:5000/files/delete-file/${fileId}`);
+      // Reload the page after deleting the file
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
+  };
+
+  const handleSearch = () => {
+    const filtered = files.filter(
+      (file) =>
+        file.RegistrationCode.toLowerCase().includes(searchInput.toLowerCase()) ||
+        file.SecurityCode.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setFilteredRows(filtered);
+  };
 
   return (
     <DashboardLayout>
@@ -53,14 +78,72 @@ function Files() {
                   </Button>
                 </Link>
               </MDBox>
-              <MDBox pt={3}>
+              <MDBox pt={3} px={2}>
+                <MDBox display="flex" alignItems="center">
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder="Search by registration code or security code"
+                    style={{
+                      border: "1px solid grey",
+                      borderRadius: "3px",
+                      padding: "5px",
+                      width: "70%", // Adjusted width
+                      marginRight: "5px",
+                    }}
+                  />
+                  <Button variant="contained" onClick={handleSearch}>
+                    <Icon style={{ color: "white" }}>search</Icon>
+                  </Button>
+                </MDBox>
                 <DataTable
-                  table={{ columns: pColumns, rows: currentRows }}
+                  table={{
+                    columns: [
+                      { Header: "Registration Code", accessor: "registrationCode" },
+                      { Header: "Security Code", accessor: "securityCode" },
+                      { Header: "Plot Type", accessor: "plotType" },
+                      { Header: "Plot Size", accessor: "plotSize" },
+                      { Header: "Project", accessor: "project" },
+                      { Header: "Status", accessor: "status" },
+                      { Header: "Actions", accessor: "actions" },
+                      { Header: "Form", accessor: "form" },
+                    ],
+                    rows: filteredRows.map((file) => ({
+                      registrationCode: file.RegistrationCode,
+                      securityCode: file.SecurityCode,
+                      plotType: file.PlotType,
+                      plotSize: file.PlotSize,
+                      project: file.Project.name,
+                      status: file.FileStatus,
+                      actions: (
+                        <MDBox display="flex" justifyContent="center">
+                          <Link to={`/files/edit-file/${file._id}`} className="edit-link">
+                            <Icon sx={{ color: "red" }}>edit</Icon>{" "}
+                          </Link>
+                          <MDTypography
+                            component="a"
+                            href="#"
+                            color="text"
+                            ml={2}
+                            onClick={() => handleDelete(file._id)}
+                            style={{ verticalAlign: "middle" }}
+                          >
+                            <Icon style={{ verticalAlign: "top", color: "black" }}>delete</Icon>{" "}
+                          </MDTypography>
+                        </MDBox>
+                      ),
+                      form: (
+                        <Link to={`/file-form/${file._id}`} className="form-link">
+                          <Icon style={{ color: "#49a3f1", fontSize: "44" }}>description</Icon>
+                        </Link>
+                      ), // Add the icon for the Form header
+                    })),
+                  }}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
                   noEndBorder
-                  // Apply custom styles to data fields
                   customCellStyles={{
                     fontFamily: "inherit",
                     fontWeight: "inherit",
@@ -68,18 +151,6 @@ function Files() {
                     color: "inherit",
                   }}
                 />
-                {/* pagination */}
-                <div>
-                  <Button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
-                    Previous
-                  </Button>
-                  <Button
-                    onClick={() => paginate(currentPage + 1)}
-                    disabled={indexOfLastItem >= pRows.length}
-                  >
-                    Next
-                  </Button>
-                </div>
               </MDBox>
             </Card>
           </Grid>

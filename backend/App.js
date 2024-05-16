@@ -10,9 +10,13 @@ app.use(express.json());
 const projectRouter = require('./routes/Project');
 const fileRouter = require('./routes/File');
 const fileverificationRouter = require('./routes/FileVerification')
+//import formouter
+const formRouter = require('./routes/Form');
 app.use('/projects', projectRouter);
 app.use('/files', fileRouter);
 app.use('/file-verification', fileverificationRouter);
+//use formrouter
+app.use('/form', formRouter);
 mongoose.connect('mongodb://localhost:27017').then(() => {
     console.log('Connected to database');
 }).catch((error) => {

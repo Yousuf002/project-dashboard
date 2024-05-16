@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Form = require('./Form'); // Import the form schema
 
 const fileSchema = new mongoose.Schema({
   RegistrationCode: {
@@ -24,6 +25,17 @@ const fileSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Project',
     required: true
+  },
+  FileStatus: {
+    type: String,
+    enum: ['Open', 'In Process', 'Closed'],
+    required: true,
+    default: 'Open'
+  },
+  // Reference to form schema
+  FormData: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Form'
   }
 });
 
