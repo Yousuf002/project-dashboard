@@ -11,6 +11,7 @@ import FileVerificationTableData from "layouts/FileVerification/data/filesVerifi
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+const apiUrl = process.env.REACT_APP_API_URL;
 function FileVerification() {
   const { columns: fvColumns, rows: fvRows, search } = FileVerificationTableData(); // Destructure search from the return value of FileVerificationTableData
   const [currentPage, setCurrentPage] = useState(1);

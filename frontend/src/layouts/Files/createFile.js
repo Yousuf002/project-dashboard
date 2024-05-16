@@ -2,6 +2,7 @@ import axios from "axios"; // Import axios for HTTP requests
 import { useEffect, useState } from "react";
 import "./CreateFileForm.css"; // Import CSS file for styling
 
+const apiUrl = process.env.REACT_APP_API_URL;
 function CreateFileForm() {
   const [registrationCode, setRegistrationCode] = useState("");
   const [securityCode, setSecurityCode] = useState("");
@@ -13,7 +14,7 @@ function CreateFileForm() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/projects");
+        const response = await axios.get(`${apiUrl}/projects`);
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -28,14 +29,14 @@ function CreateFileForm() {
 
     try {
       // Check if the registration code already exists
-      const existingFiles = await axios.get("http://localhost:5000/files/get-all-files");
+      const existingFiles = await axios.get(`${apiUrl}/files/get-all-files`);
       if (existingFiles.data.some((file) => file.RegistrationCode === registrationCode)) {
         alert("Registration code already exists. Please use a different one.");
         return; // Stop further execution
       }
 
       // Make a POST request to add the file to the backend
-      await axios.post("http://localhost:5000/files/create-file", {
+      await axios.post(`${apiUrl}/files/create-file`, {
         RegistrationCode: registrationCode,
         SecurityCode: securityCode,
         PlotType: plotType,

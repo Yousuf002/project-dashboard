@@ -5,6 +5,7 @@ import MDTypography from "components/MDTypography";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+const apiUrl = process.env.REACT_APP_API_URL;
 export default function FileVerificationTableData() {
   const [fileVerification, setFileVerification] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,9 +13,7 @@ export default function FileVerificationTableData() {
   useEffect(() => {
     const fetchFileVerification = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/file-verification/file-verifications"
-        );
+        const response = await axios.get(`${apiUrl}/file-verification/file-verifications`);
         setFileVerification(response.data);
       } catch (error) {
         console.error("Error fetching file verification data:", error);
@@ -27,7 +26,7 @@ export default function FileVerificationTableData() {
   const handleDelete = async (fileVerificationId) => {
     try {
       await axios.delete(
-        `http://localhost:5000/file-verification/delete-file-verification/${fileVerificationId}`
+        `${apiUrl}/file-verification/delete-file-verification/${fileVerificationId}`
       );
       window.location.reload();
     } catch (error) {

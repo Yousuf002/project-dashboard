@@ -9,13 +9,14 @@ import MDTypography from "components/MDTypography";
 import { useEffect, useState } from "react"; // Import useEffect and useState
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
+const apiUrl = process.env.REACT_APP_API_URL;
 export default function data() {
   const [files, setFiles] = useState([]); // Initialize files as a state variable
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/files/get-all-files");
+        const response = await axios.get(`${apiUrl}/files/get-all-files`);
         setFiles(response.data);
       } catch (error) {
         console.error("Error fetching files:", error);
@@ -27,7 +28,7 @@ export default function data() {
 
   const handleDelete = async (fileId) => {
     try {
-      await axios.delete(`http://localhost:5000/files/delete-file/${fileId}`);
+      await axios.delete(`${apiUrl}/files/delete-file/${fileId}`);
       // Reload the page after deleting the file
       window.location.reload();
     } catch (error) {

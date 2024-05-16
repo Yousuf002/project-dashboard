@@ -2,6 +2,7 @@ import axios from "axios"; // Import axios for HTTP requests
 import { useState } from "react";
 import "./CreateProjectForm.css"; // Import CSS file for styling
 
+const apiUrl = process.env.REACT_APP_API_URL;
 function CreateProjectForm() {
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
@@ -12,7 +13,7 @@ function CreateProjectForm() {
 
     try {
       // Make a POST request to add the project to the backend
-      await axios.post("http://localhost:5000/projects/addProject", {
+      await axios.post(`${apiUrl}/projects/addProject`, {
         name: projectName,
         description,
         location,

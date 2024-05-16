@@ -9,13 +9,14 @@ import MDTypography from "components/MDTypography";
 import { useEffect, useState } from "react"; // Import useEffect and useState
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
+const apiUrl = process.env.REACT_APP_API_URL;
 export default function data() {
   const [projects, setProjects] = useState([]); // Initialize projects as a state variable
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/projects");
+        const response = await axios.get(`${apiUrl}/projects`);
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -27,7 +28,7 @@ export default function data() {
 
   const handleDelete = async (projectId) => {
     try {
-      await axios.delete(`http://localhost:5000/projects/delete/${projectId}`);
+      await axios.delete(`${apiUrl}/projects/delete/${projectId}`);
       // Reload the page after deleting the project
       window.location.reload();
     } catch (error) {

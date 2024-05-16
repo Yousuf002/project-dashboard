@@ -10,6 +10,7 @@ import DataTable from "examples/Tables/DataTable";
 import projectsTableData from "layouts/projects/data/projectsTableData";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+const apiUrl = process.env.REACT_APP_API_URL;
 
 function Tables() {
   const { columns: pColumns, rows: pRows } = projectsTableData();

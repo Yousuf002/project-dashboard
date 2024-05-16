@@ -8,6 +8,8 @@ import axios from "axios"; // You need to import axios
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const RegistrationForm = () => {
   const [formData1, setFormData1] = useState(null);
 
@@ -19,7 +21,7 @@ const RegistrationForm = () => {
   useEffect(() => {
     const fetchFile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/files/get-file/${fileId}`);
+        const response = await axios.get(`${apiUrl}/files/get-file/${fileId}`);
         setFile(response.data);
       } catch (error) {
         console.error("Error fetching file:", error);
@@ -122,7 +124,7 @@ const RegistrationForm = () => {
     const fetchFormData = async () => {
       try {
         // Make a GET request to fetch the form data
-        const response = await axios.get("http://localhost:5000/form/get-form-data");
+        const response = await axios.get(`${apiUrl}/form/get-form-data`);
         setFormData1(response.data);
       } catch (error) {
         console.error("Error fetching form data:", error);
@@ -142,8 +144,8 @@ const RegistrationForm = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/form/add-form-data", formData);
-      await axios.post(`http://localhost:5000/files/update-file/${fileId}`, formData1);
+      await axios.post(`${apiUrl}/form/add-form-data`, formData);
+      await axios.post(`${apiUrl}/files/update-file/${fileId}`, formData1);
       //console.log("Form data added to file:", response.data);
       alert("Form submitted successfully!");
     } catch (error) {

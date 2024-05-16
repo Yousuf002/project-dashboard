@@ -10,6 +10,8 @@ import MDTypography from "components/MDTypography";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 import { useState } from "react";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function CreateFileVerification() {
   const [formData, setFormData] = useState({
     fileSecurityCode: "",
@@ -34,7 +36,7 @@ function CreateFileVerification() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/file-verification/add-file-verification",
+        `${apiUrl}/file-verification/add-file-verification`,
         formData
       );
       if (response && response.data && response.data.fileVerification) {

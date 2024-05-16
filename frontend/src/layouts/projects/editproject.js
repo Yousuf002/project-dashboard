@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./EditProjectForm.css";
+const apiUrl = process.env.REACT_APP_API_URL;
 
 function EditProjectForm() {
   let { projectId } = useParams();
@@ -15,7 +16,7 @@ function EditProjectForm() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/projects/getproject/${projectId}`);
+        const response = await axios.get(`${apiUrl}/projects/getproject/${projectId}`);
         setProject(response.data);
         setFormData({
           name: response.data.name, // Update to match backend schema
@@ -42,7 +43,7 @@ function EditProjectForm() {
     e.preventDefault();
 
     try {
-      await axios.put(`http://localhost:5000/projects/edit/${projectId}`, formData);
+      await axios.put(`${apiUrl}/projects/edit/${projectId}`, formData);
       console.log("Project updated successfully");
       window.location.href = "/projects"; // Redirect to /projects route
     } catch (error) {

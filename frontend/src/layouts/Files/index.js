@@ -12,6 +12,8 @@ import DataTable from "examples/Tables/DataTable";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function Files() {
   const [files, setFiles] = useState([]);
   const [searchInput, setSearchInput] = useState("");
@@ -19,7 +21,7 @@ function Files() {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/files/get-all-files");
+        const response = await axios.get(`${apiUrl}/files/get-all-files`);
         setFiles(response.data);
         setFilteredRows(response.data);
       } catch (error) {
@@ -32,7 +34,7 @@ function Files() {
 
   const handleDelete = async (fileId) => {
     try {
-      await axios.delete(`http://localhost:5000/files/delete-file/${fileId}`);
+      await axios.delete(`${apiUrl}/files/delete-file/${fileId}`);
       // Reload the page after deleting the file
       window.location.reload();
     } catch (error) {

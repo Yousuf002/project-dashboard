@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./editFileForm.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function EditFileForm() {
   let { fileId } = useParams();
   const [file, setFile] = useState(null);
@@ -18,7 +20,7 @@ function EditFileForm() {
   useEffect(() => {
     const fetchFile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/files/get-file/${fileId}`);
+        const response = await axios.get(`${apiUrl}/files/get-file/${fileId}`);
         setFile(response.data);
         setFormData({
           RegistrationCode: response.data.RegistrationCode,
@@ -37,7 +39,7 @@ function EditFileForm() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/projects/");
+        const response = await axios.get(`${apiUrl}/projects/`);
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -58,7 +60,7 @@ function EditFileForm() {
     e.preventDefault();
     try {
       // Check if the registration code already exists
-      const existingFile = await axios.get(`http://localhost:5000/files/get-all-files`);
+      const existingFile = await axios.get(`${apiUrl}/files/get-all-files`);
       if (
         existingFile.data.some(
           (file) => file.RegistrationCode === formData.RegistrationCode && file._id !== fileId
@@ -68,7 +70,7 @@ function EditFileForm() {
         return; // Stop further execution
       }
 
-      const response = await axios.put(`http://localhost:5000/files/edit-file/${fileId}`, formData);
+      const response = await axios.put(`${apiUrl}/files/edit-file/${fileId}`, formData);
       console.log("File updated successfully", response.data);
       // Optional: Redirect to /files route after successful update
       // window.location.href = "/files";
