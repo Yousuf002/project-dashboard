@@ -2,9 +2,13 @@ import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
+import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import axios from "axios"; // You need to import axios
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -64,62 +68,6 @@ const RegistrationForm = () => {
     applicant: "",
   });
 
-  const renderBoxes = (boxes) => {
-    const refs = useRef([]);
-
-    const handleChange = (e, index) => {
-      if (/^[0-9]$/.test(e.target.value)) {
-        if (index < boxes.length - 1) {
-          refs.current[index + 1].focus();
-        }
-      } else {
-        e.target.value = "";
-      }
-    };
-
-    const handleKeyDown = (e, index) => {
-      if (e.key === "Backspace" && !e.target.value) {
-        if (index > 0) {
-          refs.current[index - 1].focus();
-        }
-      }
-    };
-
-    return boxes.map((_, index) => (
-      <TextField
-        key={index}
-        inputProps={{
-          maxLength: 1,
-          style: { textAlign: "center", height: "30px" },
-          inputMode: "numeric",
-          pattern: "[0-9]*",
-        }}
-        variant="outlined"
-        size="small"
-        sx={{
-          width: "30px",
-          margin: "2px",
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "black",
-              borderWidth: "2px",
-            },
-            "&:hover fieldset": {
-              borderColor: "black",
-              borderWidth: "2px",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "black",
-              borderWidth: "2px",
-            },
-          },
-        }}
-        inputRef={(el) => (refs.current[index] = el)}
-        onChange={(e) => handleChange(e, index)}
-        onKeyDown={(e) => handleKeyDown(e, index)}
-      />
-    ));
-  };
   useEffect(() => {
     const fetchFormData = async () => {
       try {
@@ -173,235 +121,349 @@ const RegistrationForm = () => {
         break;
     }
   };
+  const [attachedFiles, setAttachedFiles] = useState({
+    passportPhoto: null,
+    applicantCNIC: null,
+    nomineeCNIC: null,
+  });
 
+  // Update the handleMediaUpload function to store the file data
+  const handleMediaUpload = (e, fileType) => {
+    const file = e.target.files[0];
+    setAttachedFiles((prevFiles) => ({
+      ...prevFiles,
+      [fileType]: file,
+    }));
+  };
+  const generatePDF = () => {
+    const formElement = document.getElementById("registrationFormContainer");
+
+    html2canvas(formElement, { scale: 5 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdfWidth = 212; // Width of A4 paper in mm
+      const pdfHeight = (canvas.height * pdfWidth + 200) / canvas.width; // Height in mm
+
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("registration_form.pdf");
+    });
+  };
+
+  const renderBoxes = (boxes, fieldName, category) => {
+    const refs = useRef([]);
+
+    const handleChange = (e, index) => {
+      const value = e.target.value;
+      if (/^[0-9]$/.test(value)) {
+        if (index < boxes.length - 1) {
+          refs.current[index + 1].focus();
+        }
+        handleInputChange(category, fieldName, value); // Pass category and fieldName to handleInputChange
+      } else {
+        e.target.value = "";
+      }
+    };
+
+    const handleKeyDown = (e, index) => {
+      if (e.key === "Backspace" && !e.target.value) {
+        if (index > 0) {
+          refs.current[index - 1].focus();
+        }
+      }
+    };
+
+    return boxes.map((_, index) => (
+      <TextField
+        key={index}
+        inputProps={{
+          maxLength: 1,
+          style: { textAlign: "center", height: "30px" },
+          inputMode: "numeric",
+          pattern: "[0-9]*",
+        }}
+        variant="outlined"
+        size="small"
+        sx={{
+          width: "30px",
+          margin: "2px",
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "black",
+              borderWidth: "2px",
+            },
+            "&:hover fieldset": {
+              borderColor: "black",
+              borderWidth: "2px",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "black",
+              borderWidth: "2px",
+            },
+          },
+        }}
+        inputRef={(el) => (refs.current[index] = el)}
+        onChange={(e) => handleChange(e, index)}
+        onKeyDown={(e) => handleKeyDown(e, index)}
+      />
+    ));
+  };
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <Box sx={{ maxWidth: 800, mx: "auto", p: 6, boxShadow: 3, my: "20px" }}>
+    <div className="registrationFormContainerDiv" id="registrationFormContainer">
+      <Box sx={{ maxWidth: 800, mx: "auto", boxShadow: 3, my: "20px" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            backgroundImage:
+              'url("https://static.vecteezy.com/system/resources/thumbnails/020/525/157/small/abstract-background-design-background-texture-design-with-abstract-style-creative-illustration-for-advertising-posters-business-cards-flyers-websites-banners-covers-landings-pages-etc-vector.jpg")',
+            backgroundSize: "contain",
+            padding: "20px",
+          }}
+        >
+          <img
+            src="https://img.freepik.com/premium-vector/abstract-trendy-floral-background-vector_7087-1882.jpg"
+            alt="Logo"
+            style={{ position: "relative", top: 10, left: 10, width: 50, height: 50 }}
+          />
           <Typography variant="h4" gutterBottom>
             Registration Form
           </Typography>
 
           <Box sx={{ my: 2 }}>
-            <Typography variant="h6">Personal Information</Typography>
-            <TextField
-              label="Name of Applicant"
-              fullWidth
-              margin="normal"
+            <Typography variant="h5">Personal Information</Typography>
+            <label>Name of Applicant:</label>
+            <input
+              type="text"
+              //placeholder="Name of Applicant"
               value={personalInformation.name}
-              required
               onChange={handleInputChange("personalInformation", "name")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <TextField
-              label="S/o, D/o, Wi/o"
-              fullWidth
-              margin="normal"
+            <label>S/o, D/o, Wi/o</label>
+            <input
+              type="text"
+              placeholder=""
               value={personalInformation.s_dw_w}
-              required
               onChange={handleInputChange("personalInformation", "s_dw_w")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <Typography>CNIC</Typography>
-            <Box sx={{ display: "flex", justifyContent: "center" }}>{renderBoxes(cnicBoxes)}</Box>
-            <Typography>Passport</Typography>
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              {renderBoxes(passportBoxes)}
-            </Box>
-            <TextField
-              label="Current Mailing Address"
-              fullWidth
-              margin="normal"
+            <label>Cnic</label>
+            <input
+              type="tel"
+              placeholder=""
+              value={nomineeInformation.cnic}
+              onChange={handleInputChange("personalInformation", "cnic")}
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
+              }}
+            />
+            <label>Passport</label>
+            <input
+              type="tel"
+              placeholder=""
+              value={nomineeInformation.cnic}
+              onChange={handleInputChange("personalInformation", "passport")}
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
+              }}
+            />
+            <label>Current Mailing Address</label>
+            <input
+              type="text"
+              placeholder=""
               value={personalInformation.currentMailingAddress}
-              required
               onChange={handleInputChange("personalInformation", "currentMailingAddress")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <TextField
-              label="Permanent Mailing Address"
-              fullWidth
-              margin="normal"
+            <label>Permanent Mailing Address</label>
+            <input
+              type="text"
+              placeholder=""
               value={personalInformation.permanentMailingAddress}
-              required
               onChange={handleInputChange("personalInformation", "permanentMailingAddress")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <TextField
-              label="Mobile Number"
-              fullWidth
-              margin="normal"
+            <label>Mobile Number</label>
+            <input
+              type="text"
+              placeholder=""
               value={personalInformation.mobileNumber}
-              required
               onChange={handleInputChange("personalInformation", "mobileNumber")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <TextField
-              label="Office Number"
-              fullWidth
-              margin="normal"
+            <label>Office Number</label>
+            <input
+              type="text"
+              placeholder="Office Number"
               value={personalInformation.officeNumber}
-              required
               onChange={handleInputChange("personalInformation", "officeNumber")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <TextField
-              label="Email"
-              fullWidth
-              margin="normal"
+            <label>Email</label>
+            <input
+              type="text"
+              placeholder="Email"
               value={personalInformation.email}
-              required
               onChange={handleInputChange("personalInformation", "email")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
           </Box>
 
           <Box sx={{ my: 2 }}>
-            <Typography variant="h6">Nominee Information</Typography>
-            <TextField
-              label="Name of Nominee"
-              fullWidth
-              margin="normal"
+            <Typography variant="h5">Nominee Information</Typography>
+            <label>Name of Nominee</label>
+            <input
+              type="text"
+              placeholder=""
               value={nomineeInformation.nomineeName}
-              required
               onChange={handleInputChange("nomineeInformation", "nomineeName")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <TextField
-              label="S/o, D/o, Wi/o"
-              fullWidth
-              margin="normal"
+            <label>S/o, D/o, Wi/o</label>
+            <input
+              type="text"
+              placeholder=""
               value={nomineeInformation.nomineeS_dw_w}
-              required
               onChange={handleInputChange("nomineeInformation", "nomineeS_dw_w")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <Typography>CNIC</Typography>
-            <Box sx={{ display: "flex", justifyContent: "center" }}>{renderBoxes(cnicBoxes)}</Box>
-            <Typography>Passport</Typography>
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              {renderBoxes(passportBoxes)}
-            </Box>
-            <TextField
-              label="Relation"
-              fullWidth
-              margin="normal"
+            <label>Nominee Cnic</label>
+            <input
+              type="tel"
+              placeholder=""
+              value={nomineeInformation.cnic}
+              onChange={handleInputChange("nomineeInformation", "nomineeCnic")}
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
+              }}
+            />
+            <label>Nominee Passport</label>
+            <input
+              type="tel"
+              placeholder=""
+              value={nomineeInformation.cnic}
+              onChange={handleInputChange("nomineeInformation", "nomineePassport")}
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
+              }}
+            />
+            <label>Relation</label>
+            <input
+              type="text"
+              placeholder=""
               value={nomineeInformation.relation}
-              required
               onChange={handleInputChange("nomineeInformation", "relation")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
-            <TextField
-              label="Contact Number"
-              fullWidth
-              margin="normal"
+            <label>Contact Number</label>
+            <input
+              type="text"
+              placeholder=""
               value={nomineeInformation.contactNumber}
-              required
               onChange={handleInputChange("nomineeInformation", "contactNumber")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
+              style={{
+                width: "100%",
+                height: "50px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginBottom: "10px",
               }}
             />
           </Box>
 
           <Box sx={{ my: 2 }}>
-            <Typography variant="h6">Mode of Payment</Typography>
+            <Typography variant="h5">Mode of Payment</Typography>
             <FormGroup row>
               {["Cash", "Cheque", "Deposit", "Other"].map((method) => (
                 <FormControlLabel
@@ -425,156 +487,166 @@ const RegistrationForm = () => {
                 />
               ))}
             </FormGroup>
-            <TextField
-              label="Amount"
-              fullWidth
-              margin="normal"
-              value={modeOfPayment.amount1}
-              required
-              onChange={handleInputChange("modeOfPayment", "amount1")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
-              }}
-            />
-            <TextField
-              label="Date"
-              type="date"
-              fullWidth
-              margin="normal"
-              value={modeOfPayment.date1}
-              required
-              onChange={handleInputChange("modeOfPayment", "date1")}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
-              }}
-            />
-            <TextField
-              label="Amount"
-              fullWidth
-              margin="normal"
-              value={modeOfPayment.amount2}
-              required
-              onChange={handleInputChange("modeOfPayment", "amount2")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
-              }}
-            />
-            <TextField
-              label="Date"
-              type="date"
-              fullWidth
-              margin="normal"
-              value={modeOfPayment.date2}
-              required
-              onChange={handleInputChange("modeOfPayment", "date2")}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
-              }}
-            />
+            <div style={{ display: "flex", marginBottom: "20px" }}>
+              <label>Amount</label>
+              <input
+                type="text"
+                placeholder=""
+                value={modeOfPayment.amount1}
+                onChange={handleInputChange("modeOfPayment", "amount1")}
+                style={{
+                  flex: "1",
+                  height: "50px",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                  marginRight: "10px",
+                }}
+              />
+              <label>Date</label>
+              <input
+                type="date"
+                placeholder=""
+                value={modeOfPayment.date1}
+                onChange={handleInputChange("modeOfPayment", "date1")}
+                style={{
+                  flex: "1",
+                  height: "50px",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                }}
+              />
+            </div>
+            <div style={{ display: "flex" }}>
+              <label>Amount</label>
+              <input
+                type="text"
+                placeholder="Amount"
+                value={modeOfPayment.amount2}
+                onChange={handleInputChange("modeOfPayment", "amount2")}
+                style={{
+                  flex: "1",
+                  height: "50px",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                  marginRight: "10px",
+                }}
+              />
+              <label>Date</label>
+              <input
+                type="date"
+                placeholder="Date"
+                value={modeOfPayment.date2}
+                onChange={handleInputChange("modeOfPayment", "date2")}
+                style={{
+                  flex: "1",
+                  height: "50px",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                }}
+              />
+            </div>
           </Box>
 
           <Box sx={{ my: 2 }}>
             <Typography variant="h5">Documents to be Attached</Typography>
             <ul style={{ fontSize: "16px" }}>
-              <li>Document 1</li>
-              <li>Document 2</li>
-              <li>Document 3</li>
+              <li>2 Passport Size Photograph</li>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleMediaUpload(e, "passportPhoto")}
+                multiple // Enable multiple file selection
+                style={{ marginBottom: "10px" }} // Add inline CSS here
+              />
+              <li>Copy of Applicant&apos;s CNIC</li>
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,image/*"
+                onChange={(e) => handleMediaUpload(e, "applicantCNIC")}
+                style={{ marginBottom: "10px" }} // Add inline CSS here
+              />
+              <li>Copy of Nominee&apos;s CNIC</li>
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,image/*"
+                onChange={(e) => handleMediaUpload(e, "nomineeCNIC")}
+                style={{ marginBottom: "10px" }} // Add inline CSS here
+              />
             </ul>
           </Box>
 
           <Box sx={{ my: 2 }}>
             <Typography variant="h6">Signatures</Typography>
-            <TextField
-              label="Manager"
-              fullWidth
-              margin="normal"
-              value={signatures.manager}
-              required
-              onChange={handleInputChange("signatures", "manager")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
-              }}
-            />
-            <TextField
-              label="Officer"
-              fullWidth
-              margin="normal"
-              value={signatures.officer}
-              required
-              onChange={handleInputChange("signatures", "officer")}
-              InputProps={{
-                sx: {
-                  height: "50px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "50px", // Adjust the height as needed
-                    },
-                  },
-                },
-              }}
-            />
-            <TextField
-              label="Applicant"
-              fullWidth
-              margin="normal"
-              value={signatures.applicant}
-              required
-              onChange={handleInputChange("signatures", "applicant")}
-              InputProps={{
-                sx: {
-                  height: "30px", // Adjust the height as needed
-                  "& .MuiOutlinedInput-root": {
-                    "& input": {
-                      height: "60px", // Adjust the height as needed
-                    },
-                  },
-                },
-              }}
-            />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <label>Manager</label>
+                <input
+                  type="text"
+                  placeholder=""
+                  value={signatures.manager}
+                  onChange={handleInputChange("signatures", "manager")}
+                  style={{
+                    width: "100%",
+                    height: "50px",
+                    padding: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "5px",
+                  }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <label>Officer</label>
+                <input
+                  type="text"
+                  placeholder=""
+                  value={signatures.officer}
+                  onChange={handleInputChange("signatures", "officer")}
+                  style={{
+                    width: "100%",
+                    height: "50px",
+                    padding: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "5px",
+                  }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <label>Applicant</label>
+                <input
+                  type="text"
+                  placeholder=""
+                  value={signatures.applicant}
+                  onChange={handleInputChange("signatures", "applicant")}
+                  style={{
+                    width: "100%",
+                    height: "50px",
+                    padding: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "5px",
+                  }}
+                />
+              </Grid>
+            </Grid>
           </Box>
 
           <button type="submit" className="submit-button">
             Submit
           </button>
-        </Box>
-      </form>
+
+          <button
+            type="button"
+            onClick={generatePDF}
+            className="submit-button"
+            style={{ marginLeft: "20px" }}
+          >
+            Generate PDF
+          </button>
+        </form>
+      </Box>
     </div>
   );
 };

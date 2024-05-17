@@ -81,6 +81,11 @@ router.put('/edit-file/:id', async (req, res) => {
             return res.status(404).json({ message: 'File not found' });
         }
 
+        // Check if the file status is already "In Process"
+        if (file.FileStatus === 'In Process') {
+            return res.status(400).json({ message: 'File status is already in process' });
+        }
+
         // Update the file status to "In Process"
         file.FileStatus = 'In Process';
 
@@ -96,6 +101,20 @@ router.put('/edit-file/:id', async (req, res) => {
         // If there's an error, send a 500 status code along with the error message
         res.status(500).json({ message: 'Failed to add form data to file', error: error.message });
     }
+});
+router.delete('/delete-file/:fileId', async (req, res) => {
+  try {
+      const file = await File.findByIdAndDelete(req.params.fileId);
+      if (!file) {
+          console.log('file not found');
+          return res.status(404).json({ error: 'file not found' });
+      }
+      console.log('file deleted successfully:', file);
+      res.status(200).json(file);
+  } catch (error) {
+      console.error('Error deleting file:', error);
+      res.status(500).json({ error: error.message });
+  }
 });
 
   

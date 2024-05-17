@@ -109,7 +109,6 @@ function Files() {
                       { Header: "Project", accessor: "project" },
                       { Header: "Status", accessor: "status" },
                       { Header: "Actions", accessor: "actions" },
-                      { Header: "Form", accessor: "form" },
                     ],
                     rows: filteredRows.map((file) => ({
                       registrationCode: file.RegistrationCode,
@@ -121,7 +120,7 @@ function Files() {
                       actions: (
                         <MDBox display="flex" justifyContent="center">
                           <Link to={`/files/edit-file/${file._id}`} className="edit-link">
-                            <Icon sx={{ color: "red" }}>edit</Icon>{" "}
+                            <Icon sx={{ color: "grey" }}>edit</Icon>{" "}
                           </Link>
                           <MDTypography
                             component="a"
@@ -131,14 +130,20 @@ function Files() {
                             onClick={() => handleDelete(file._id)}
                             style={{ verticalAlign: "middle" }}
                           >
-                            <Icon style={{ verticalAlign: "top", color: "black" }}>delete</Icon>{" "}
+                            <Icon style={{ verticalAlign: "top", color: "red" }}>delete</Icon>{" "}
+                          </MDTypography>
+                          <MDTypography
+                            component="a"
+                            href="#"
+                            color="text"
+                            ml={2}
+                            style={{ verticalAlign: "middle" }}
+                          >
+                            <Link to={`/file-form/${file._id}`} className="form-link">
+                              <Icon style={{ color: "#49a3f1", fontSize: "44" }}>description</Icon>
+                            </Link>
                           </MDTypography>
                         </MDBox>
-                      ),
-                      form: (
-                        <Link to={`/file-form/${file._id}`} className="form-link">
-                          <Icon style={{ color: "#49a3f1", fontSize: "44" }}>description</Icon>
-                        </Link>
                       ), // Add the icon for the Form header
                     })),
                   }}

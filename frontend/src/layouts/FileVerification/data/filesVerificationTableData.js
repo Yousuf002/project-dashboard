@@ -3,7 +3,6 @@ import axios from "axios";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 export default function FileVerificationTableData() {
@@ -61,9 +60,6 @@ export default function FileVerificationTableData() {
       status: verification.status,
       actions: (
         <MDBox display="flex" justifyContent="center">
-          <Link to={`/edit-file-verification/${verification._id}`} className="edit-link">
-            <Icon sx={{ color: "grey", fontSize: "24" }}>edit</Icon>
-          </Link>
           <MDTypography
             component="a"
             href="#"
@@ -72,7 +68,7 @@ export default function FileVerificationTableData() {
             onClick={() => handleDelete(verification._id)}
             style={{ verticalAlign: "middle" }}
           >
-            <Icon style={{ verticalAlign: "top", color: "grey" }}>delete</Icon>
+            <Icon style={{ verticalAlign: "top", color: "red" }}>delete</Icon>
           </MDTypography>
         </MDBox>
       ),

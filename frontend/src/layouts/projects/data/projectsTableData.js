@@ -66,7 +66,7 @@ export default function data() {
             style={{ verticalAlign: "middle" }} // Adjust vertical alignment
           >
             <Link to="#">
-              <Icon style={{ verticalAlign: "top", color: "grey" }}>delete</Icon>{" "}
+              <Icon style={{ verticalAlign: "top", color: "red" }}>delete</Icon>{" "}
             </Link>
           </MDTypography>
         </MDBox>
