@@ -3,14 +3,18 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import axios from "axios"; // You need to import axios
-import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import PIA from "./PIA.png";
+import BG from "./bg2.jpg";
+//import gtml2canvas
+import html2canvas from "html2canvas";
+//require cors
+const cors = require("cors");
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -33,6 +37,7 @@ const RegistrationForm = () => {
     };
     fetchFile();
   }, [fileId]);
+  const [plotSizes, setplotSizes] = useState([]);
   const [personalInformation, setPersonalInformation] = useState({
     name: "",
     s_dw_w: "",
@@ -85,6 +90,7 @@ const RegistrationForm = () => {
     e.preventDefault();
 
     const formData = {
+      plotSizes: plotSizes,
       personalInformation: personalInformation,
       nomineeInformation: nomineeInformation,
       modeOfPayment: modeOfPayment,
@@ -105,6 +111,9 @@ const RegistrationForm = () => {
   const handleInputChange = (category, fieldName) => (e) => {
     const { value } = e.target;
     switch (category) {
+      case "plotSizes":
+        setplotSizes((prevInfo) => ({ ...prevInfo, [fieldName]: value }));
+        break;
       case "personalInformation":
         setPersonalInformation((prevInfo) => ({ ...prevInfo, [fieldName]: value }));
         break;
@@ -135,99 +144,98 @@ const RegistrationForm = () => {
       [fileType]: file,
     }));
   };
+  //registrationFormContainer
+  const formRef = useRef(null);
   const generatePDF = () => {
     const formElement = document.getElementById("registrationFormContainer");
 
-    html2canvas(formElement, { scale: 5 }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdfWidth = 212; // Width of A4 paper in mm
-      const pdfHeight = (canvas.height * pdfWidth + 200) / canvas.width; // Height in mm
+    // Check if formElement exists
+    if (!formElement) {
+      console.error("Form element not found.");
+      return;
+    }
 
-      const pdf = new jsPDF("p", "mm", "a4");
+    // Increase font size of form content
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("registration_form.pdf");
+    const background = new Image();
+    background.src = BG;
+    background.crossOrigin = "anonymous";
+
+    const logo = new Image();
+    logo.src = PIA; // Adjust the path to your logo image
+    logo.crossOrigin = "anonymous";
+
+    Promise.all([
+      new Promise((resolve) => {
+        background.onload = resolve;
+      }),
+      new Promise((resolve) => {
+        logo.onload = resolve;
+      }),
+    ]).then(() => {
+      html2canvas(formElement).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdfWidth = 100; // Width of A4 paper in mm
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Height in mm
+
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        pdf.addImage(background, "PNG", 0, 0, 210, 297); // Add background image
+        pdf.addImage(logo, "PNG", 10, 5, 40, 40); // Adjust the coordinates and dimensions as needed
+
+        pdf.addImage(imgData, "PNG", 0, 38, pdfWidth, pdfHeight); // Adjust the Y coordinate (50) to position the form content below the logo
+        pdf.save("registration_form.pdf");
+      });
     });
   };
-
-  const renderBoxes = (boxes, fieldName, category) => {
-    const refs = useRef([]);
-
-    const handleChange = (e, index) => {
-      const value = e.target.value;
-      if (/^[0-9]$/.test(value)) {
-        if (index < boxes.length - 1) {
-          refs.current[index + 1].focus();
-        }
-        handleInputChange(category, fieldName, value); // Pass category and fieldName to handleInputChange
-      } else {
-        e.target.value = "";
-      }
-    };
-
-    const handleKeyDown = (e, index) => {
-      if (e.key === "Backspace" && !e.target.value) {
-        if (index > 0) {
-          refs.current[index - 1].focus();
-        }
-      }
-    };
-
-    return boxes.map((_, index) => (
-      <TextField
-        key={index}
-        inputProps={{
-          maxLength: 1,
-          style: { textAlign: "center", height: "30px" },
-          inputMode: "numeric",
-          pattern: "[0-9]*",
-        }}
-        variant="outlined"
-        size="small"
-        sx={{
-          width: "30px",
-          margin: "2px",
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "black",
-              borderWidth: "2px",
-            },
-            "&:hover fieldset": {
-              borderColor: "black",
-              borderWidth: "2px",
-            },
-            "&.Mui-focused fieldset": {
-              borderColor: "black",
-              borderWidth: "2px",
-            },
-          },
-        }}
-        inputRef={(el) => (refs.current[index] = el)}
-        onChange={(e) => handleChange(e, index)}
-        onKeyDown={(e) => handleKeyDown(e, index)}
-      />
-    ));
-  };
   return (
-    <div className="registrationFormContainerDiv" id="registrationFormContainer">
-      <Box sx={{ maxWidth: 800, mx: "auto", boxShadow: 3, my: "20px" }}>
+    <div className="">
+      <Box
+        sx={{
+          maxWidth: 800,
+          mx: "auto",
+          boxShadow: 3,
+          my: "20px",
+        }}
+        className="form-content"
+      >
         <form
+          id="registrationFormContainer"
           onSubmit={handleSubmit}
+          ref={formRef}
           style={{
-            backgroundImage:
-              'url("https://static.vecteezy.com/system/resources/thumbnails/020/525/157/small/abstract-background-design-background-texture-design-with-abstract-style-creative-illustration-for-advertising-posters-business-cards-flyers-websites-banners-covers-landings-pages-etc-vector.jpg")',
-            backgroundSize: "contain",
             padding: "20px",
           }}
         >
-          <img
-            src="https://img.freepik.com/premium-vector/abstract-trendy-floral-background-vector_7087-1882.jpg"
-            alt="Logo"
-            style={{ position: "relative", top: 10, left: 10, width: 50, height: 50 }}
-          />
           <Typography variant="h4" gutterBottom>
             Registration Form
           </Typography>
+          <FormGroup row>
+            {["3 Marla", "4 Marla", "5 Marla", "7 Marla", "10 Marla", "Other"].map((method) => (
+              <FormControlLabel
+                key={method}
+                control={
+                  <Checkbox
+                    name={method}
+                    checked={plotSizes.includes(method)}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setplotSizes((prevplotSizes) => {
+                        if (checked) {
+                          // Add the selected plot size to the array
+                          return [...prevplotSizes, method];
+                        } else {
+                          // Remove the selected plot size from the array
+                          return prevplotSizes.filter((size) => size !== method);
+                        }
+                      });
+                    }}
+                  />
+                }
+                label={method}
+              />
+            ))}
+          </FormGroup>
 
           <Box sx={{ my: 2 }}>
             <Typography variant="h5">Personal Information</Typography>
@@ -553,7 +561,7 @@ const RegistrationForm = () => {
 
           <Box sx={{ my: 2 }}>
             <Typography variant="h5">Documents to be Attached</Typography>
-            <ul style={{ fontSize: "16px" }}>
+            <ul style={{ fontSize: "14px" }}>
               <li>2 Passport Size Photograph</li>
               <input
                 type="file"
