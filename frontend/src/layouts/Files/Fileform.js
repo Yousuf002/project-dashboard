@@ -175,15 +175,15 @@ const RegistrationForm = () => {
     ]).then(() => {
       html2canvas(formElement).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
-        const pdfWidth = 100; // Width of A4 paper in mm
+        const pdfWidth = 89; // Width of A4 paper in mm
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Height in mm
 
         const pdf = new jsPDF("p", "mm", "a4");
 
         pdf.addImage(background, "PNG", 0, 0, 210, 297); // Add background image
-        pdf.addImage(logo, "PNG", 10, 5, 40, 40); // Adjust the coordinates and dimensions as needed
+        pdf.addImage(logo, "PNG", 10, 0, 40, 40); // Adjust the coordinates and dimensions as needed
 
-        pdf.addImage(imgData, "PNG", 0, 38, pdfWidth, pdfHeight); // Adjust the Y coordinate (50) to position the form content below the logo
+        pdf.addImage(imgData, "PNG", 0, 38, pdfWidth + 50, pdfHeight + 20); // Adjust the Y coordinate (50) to position the form content below the logo
         pdf.save("registration_form.pdf");
       });
     });
@@ -205,11 +205,13 @@ const RegistrationForm = () => {
           ref={formRef}
           style={{
             padding: "20px",
+            backgroundColor: "transparent",
           }}
         >
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h3" gutterBottom>
             Registration Form
           </Typography>
+          <Typography variant="h5">Plot Size</Typography>
           <FormGroup row>
             {["3 Marla", "4 Marla", "5 Marla", "7 Marla", "10 Marla", "Other"].map((method) => (
               <FormControlLabel
