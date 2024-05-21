@@ -35,7 +35,7 @@ const fileSchema = new mongoose.Schema({
   // Reference to form schema
   FormData: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Form'
+    ref: 'form'
   }
 });
 

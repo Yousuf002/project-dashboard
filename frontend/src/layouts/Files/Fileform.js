@@ -2,7 +2,6 @@ import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import axios from "axios"; // You need to import axios
 import jsPDF from "jspdf";
@@ -72,20 +71,11 @@ const RegistrationForm = () => {
     officer: "",
     applicant: "",
   });
-
-  useEffect(() => {
-    const fetchFormData = async () => {
-      try {
-        // Make a GET request to fetch the form data
-        const response = await axios.get(`${apiUrl}/form/get-form-data`);
-        setFormData1(response.data);
-      } catch (error) {
-        console.error("Error fetching form data:", error);
-      }
-    };
-
-    fetchFormData();
-  }, []);
+  const [attachedFiles, setAttachedFiles] = useState({
+    passportImages: [],
+    applicantCnic: null,
+    nomineeCnic: null,
+  });
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -95,11 +85,12 @@ const RegistrationForm = () => {
       nomineeInformation: nomineeInformation,
       modeOfPayment: modeOfPayment,
       signatures: signatures,
+      attachedFiles: attachedFiles,
     };
 
     try {
-      await axios.post(`${apiUrl}/form/add-form-data`, formData);
-      await axios.post(`${apiUrl}/files/update-file/${fileId}`, formData1);
+      await axios.post(`${apiUrl}/form/add-form-data/${fileId}`, formData);
+      //await axios.put(`${apiUrl}/files/update-file/${fileId}`, formData);
       //console.log("Form data added to file:", response.data);
       alert("Form submitted successfully!");
     } catch (error) {
@@ -130,19 +121,31 @@ const RegistrationForm = () => {
         break;
     }
   };
-  const [attachedFiles, setAttachedFiles] = useState({
-    passportPhoto: null,
-    applicantCNIC: null,
-    nomineeCNIC: null,
-  });
 
   // Update the handleMediaUpload function to store the file data
   const handleMediaUpload = (e, fileType) => {
     const file = e.target.files[0];
-    setAttachedFiles((prevFiles) => ({
-      ...prevFiles,
-      [fileType]: file,
-    }));
+    const filePathOrURL = URL.createObjectURL(file);
+
+    // Check the fileType to update the state accordingly
+    if (fileType === "passportPhoto") {
+      setAttachedFiles((prevFiles) => ({
+        ...prevFiles,
+        passportImages: [...prevFiles.passportImages, filePathOrURL],
+      }));
+    } else if (fileType === "applicantCNIC") {
+      // Corrected key name
+      setAttachedFiles((prevFiles) => ({
+        ...prevFiles,
+        applicantCnic: filePathOrURL, // Corrected key name
+      }));
+    } else if (fileType === "nomineeCNIC") {
+      // Corrected key name
+      setAttachedFiles((prevFiles) => ({
+        ...prevFiles,
+        nomineeCnic: filePathOrURL, // Corrected key name
+      }));
+    }
   };
   //registrationFormContainer
   const formRef = useRef(null);
@@ -155,8 +158,6 @@ const RegistrationForm = () => {
       return;
     }
 
-    // Increase font size of form content
-
     const background = new Image();
     background.src = BG;
     background.crossOrigin = "anonymous";
@@ -164,6 +165,16 @@ const RegistrationForm = () => {
     const logo = new Image();
     logo.src = PIA; // Adjust the path to your logo image
     logo.crossOrigin = "anonymous";
+    const submitButtons = formElement.querySelectorAll(".submit-button");
+    submitButtons.forEach((button) => {
+      button.remove();
+    });
+
+    // Hide the document section
+    const documentSection = formElement.querySelector(".documents");
+    if (documentSection) {
+      documentSection.style.display = "none";
+    }
 
     Promise.all([
       new Promise((resolve) => {
@@ -175,19 +186,56 @@ const RegistrationForm = () => {
     ]).then(() => {
       html2canvas(formElement).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
-        const pdfWidth = 89; // Width of A4 paper in mm
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width; // Height in mm
-
         const pdf = new jsPDF("p", "mm", "a4");
+        const pdfWidth = 210; // Width of A4 paper in mm
+        const pdfHeight = 297; // Height in mm
 
-        pdf.addImage(background, "PNG", 0, 0, 210, 297); // Add background image
-        pdf.addImage(logo, "PNG", 10, 0, 40, 40); // Adjust the coordinates and dimensions as needed
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgHeight = (imgProps.height * pdfWidth - 30) / imgProps.width;
+        let heightLeft = imgHeight;
+        let position = 0;
 
-        pdf.addImage(imgData, "PNG", 0, 38, pdfWidth + 50, pdfHeight + 20); // Adjust the Y coordinate (50) to position the form content below the logo
+        pdf.addImage(background, "PNG", 0, 0, 210, 297); // Add background image on the first page
+        pdf.addImage(logo, "PNG", 10, 0, 30, 30); // Adjust the coordinates and dimensions as needed
+
+        pdf.addImage(imgData, "PNG", 18, 48, pdfWidth - 40, imgHeight - 35); // Adjust the Y coordinate (50) to position the form content below the logo
+
+        heightLeft -= pdfHeight - 50;
+        //declare totalPages
+        let totalPages = 1;
+        while (heightLeft > 0 && totalPages < 3) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 18, position, pdfWidth - 40, imgHeight);
+          heightLeft -= pdfHeight;
+          totalPages++;
+        }
+
+        // Draw signatures
+        const signatureY = pdf.internal.pageSize.getHeight() - 40;
+        const fontSize = 10; // Adjust the font size as needed
+
+        pdf.setFontSize(fontSize);
+        //change pdf text color
+        pdf.setTextColor(128, 128, 128);
+        pdf.text(
+          "Applicant's Signature: _______________     Manager's Signature: _______________     Officer's Signature: _______________",
+          8,
+          signatureY + 5
+        );
         pdf.save("registration_form.pdf");
+        submitButtons.forEach((button) => {
+          formElement.appendChild(button);
+        });
+
+        //Show the document section again
+        if (documentSection) {
+          documentSection.style.display = "block";
+        }
       });
     });
   };
+
   return (
     <div className="">
       <Box
@@ -249,7 +297,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "name")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -264,7 +312,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "s_dw_w")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -279,7 +327,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "cnic")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -294,7 +342,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "passport")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -309,7 +357,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "currentMailingAddress")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -324,7 +372,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "permanentMailingAddress")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -339,7 +387,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "mobileNumber")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -354,7 +402,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "officeNumber")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -369,7 +417,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("personalInformation", "email")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -378,7 +426,7 @@ const RegistrationForm = () => {
             />
           </Box>
 
-          <Box sx={{ my: 2 }}>
+          <Box sx={{ my: 9 }}>
             <Typography variant="h5">Nominee Information</Typography>
             <label>Name of Nominee</label>
             <input
@@ -388,7 +436,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("nomineeInformation", "nomineeName")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -403,7 +451,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("nomineeInformation", "nomineeS_dw_w")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -418,7 +466,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("nomineeInformation", "nomineeCnic")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -433,7 +481,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("nomineeInformation", "nomineePassport")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -448,7 +496,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("nomineeInformation", "relation")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -463,7 +511,7 @@ const RegistrationForm = () => {
               onChange={handleInputChange("nomineeInformation", "contactNumber")}
               style={{
                 width: "100%",
-                height: "50px",
+                height: "43px",
                 padding: "10px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
@@ -506,7 +554,7 @@ const RegistrationForm = () => {
                 onChange={handleInputChange("modeOfPayment", "amount1")}
                 style={{
                   flex: "1",
-                  height: "50px",
+                  height: "43px",
                   padding: "10px",
                   border: "1px solid #ccc",
                   borderRadius: "5px",
@@ -521,7 +569,7 @@ const RegistrationForm = () => {
                 onChange={handleInputChange("modeOfPayment", "date1")}
                 style={{
                   flex: "1",
-                  height: "50px",
+                  height: "43px",
                   padding: "10px",
                   border: "1px solid #ccc",
                   borderRadius: "5px",
@@ -537,7 +585,7 @@ const RegistrationForm = () => {
                 onChange={handleInputChange("modeOfPayment", "amount2")}
                 style={{
                   flex: "1",
-                  height: "50px",
+                  height: "43px",
                   padding: "10px",
                   border: "1px solid #ccc",
                   borderRadius: "5px",
@@ -552,7 +600,7 @@ const RegistrationForm = () => {
                 onChange={handleInputChange("modeOfPayment", "date2")}
                 style={{
                   flex: "1",
-                  height: "50px",
+                  height: "43px",
                   padding: "10px",
                   border: "1px solid #ccc",
                   borderRadius: "5px",
@@ -561,7 +609,7 @@ const RegistrationForm = () => {
             </div>
           </Box>
 
-          <Box sx={{ my: 2 }}>
+          <Box sx={{ my: 2 }} className="documents">
             <Typography variant="h5">Documents to be Attached</Typography>
             <ul style={{ fontSize: "14px" }}>
               <li>2 Passport Size Photograph</li>
@@ -587,60 +635,6 @@ const RegistrationForm = () => {
                 style={{ marginBottom: "10px" }} // Add inline CSS here
               />
             </ul>
-          </Box>
-
-          <Box sx={{ my: 2 }}>
-            <Typography variant="h6">Signatures</Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <label>Manager</label>
-                <input
-                  type="text"
-                  placeholder=""
-                  value={signatures.manager}
-                  onChange={handleInputChange("signatures", "manager")}
-                  style={{
-                    width: "100%",
-                    height: "50px",
-                    padding: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                  }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <label>Officer</label>
-                <input
-                  type="text"
-                  placeholder=""
-                  value={signatures.officer}
-                  onChange={handleInputChange("signatures", "officer")}
-                  style={{
-                    width: "100%",
-                    height: "50px",
-                    padding: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                  }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <label>Applicant</label>
-                <input
-                  type="text"
-                  placeholder=""
-                  value={signatures.applicant}
-                  onChange={handleInputChange("signatures", "applicant")}
-                  style={{
-                    width: "100%",
-                    height: "50px",
-                    padding: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                  }}
-                />
-              </Grid>
-            </Grid>
           </Box>
 
           <button type="submit" className="submit-button">

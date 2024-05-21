@@ -18,6 +18,7 @@ function Files() {
   const [files, setFiles] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
+
   useEffect(() => {
     const fetchFiles = async () => {
       try {
@@ -50,6 +51,14 @@ function Files() {
     );
     setFilteredRows(filtered);
   };
+  useEffect(() => {
+    const filtered = files.filter(
+      (file) =>
+        file.RegistrationCode.toLowerCase().includes(searchInput.toLowerCase()) ||
+        file.SecurityCode.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setFilteredRows(filtered);
+  }, [searchInput, files]);
 
   return (
     <DashboardLayout>
@@ -115,7 +124,7 @@ function Files() {
                       securityCode: file.SecurityCode,
                       plotType: file.PlotType,
                       plotSize: file.PlotSize,
-                      project: file.Project.name,
+                      project: file.Project ? file.Project.name : "N/A", // Ensure Project is not null
                       status: file.FileStatus,
                       actions: (
                         <MDBox display="flex" justifyContent="center">
@@ -139,7 +148,7 @@ function Files() {
                             ml={2}
                             style={{ verticalAlign: "middle" }}
                           >
-                            <Link to={`/file-form/${file._id}`} className="form-link">
+                            <Link to={`/form/${file._id}`} className="form-link">
                               <Icon style={{ color: "#49a3f1", fontSize: "44" }}>description</Icon>
                             </Link>
                           </MDTypography>

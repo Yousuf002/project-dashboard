@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+
 const FormDataSchema = new mongoose.Schema({
   plotSizes: [String],
   personalInformation: {
@@ -31,6 +32,11 @@ const FormDataSchema = new mongoose.Schema({
     manager: String,
     officer: String,
     applicant: String,
+  },
+  attachedFiles: {
+    applicantCnic: String,
+    passportImages: [String],
+    nomineeCnic: String,
   },
 });
 

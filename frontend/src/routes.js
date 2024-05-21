@@ -41,6 +41,8 @@ import CreateFileVerificationForm from "layouts/FileVerification/addFileVerifica
 import Files from "layouts/Files";
 import FileForm from "layouts/Files/Fileform";
 import EditFileForm from "layouts/Files/editFile";
+import FileFormData from "layouts/Files/fileFormdata";
+import ViewForm from "layouts/Files/‎ViewForm";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import Billing from "layouts/billing";
@@ -78,6 +80,14 @@ const routes = [
     name: "",
     key: "",
     icon: <Icon fontSize="small"></Icon>,
+    route: "/form/:fileId",
+    component: <FileFormData />,
+  },
+  {
+    type: "none",
+    name: "",
+    key: "",
+    icon: <Icon fontSize="small"></Icon>,
     route: "/create-file",
     component: <CreateFileForm />,
   },
@@ -88,6 +98,14 @@ const routes = [
     icon: <Icon fontSize="small"></Icon>,
     route: "/create-file-verification",
     component: <CreateFileVerificationForm />,
+  },
+  {
+    type: "none",
+    name: "",
+    key: "",
+    icon: <Icon fontSize="small"></Icon>,
+    route: "/view-form/:fileId",
+    component: <ViewForm />,
   },
   {
     type: "none",

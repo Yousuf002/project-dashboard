@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const File = require('../models/File');
-const Form = require('../models/Form');
+const FormDataModel = require('../models/Form');
 
 // POST route to create a new file object
 router.post('/create-file', async (req, res) => {
@@ -14,8 +14,7 @@ router.post('/create-file', async (req, res) => {
 
     // Create a new file object using the request body
     const newFile = new File({
-      ...req.body,
-      FormData: null, // Set FormData to null
+      ...req.body, // Set FormData to null
     });
 
     // Save the new file object to the database
@@ -71,7 +70,7 @@ router.put('/edit-file/:id', async (req, res) => {
       res.status(500).json({ message: 'Failed to update file', error: error.message });
     }
   });
-  router.post('/update-file/:id', async (req, res) => {
+  router.put('/update-file/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -81,16 +80,14 @@ router.put('/edit-file/:id', async (req, res) => {
             return res.status(404).json({ message: 'File not found' });
         }
 
-        // Check if the file status is already "In Process"
-        if (file.FileStatus === 'In Process') {
-            return res.status(400).json({ message: 'File status is already in process' });
+        // Ensure the form data exists and get its ObjectId
+        const formData = await FormDataModel.findById(req.body.FormData);
+        if (!formData) {
+            return res.status(404).json({ message: 'Form data not found' });
         }
 
-        // Update the file status to "In Process"
-        file.FileStatus = 'In Process';
-
         // Add form data to the file
-        file.FormData = req.body;
+        file.FormData = formData._id;
 
         // Save the updated file object
         await file.save();
@@ -102,6 +99,7 @@ router.put('/edit-file/:id', async (req, res) => {
         res.status(500).json({ message: 'Failed to add form data to file', error: error.message });
     }
 });
+
 router.delete('/delete-file/:fileId', async (req, res) => {
   try {
       const file = await File.findByIdAndDelete(req.params.fileId);
