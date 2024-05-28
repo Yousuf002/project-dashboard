@@ -1,69 +1,81 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// @mui material components
 import Grid from "@mui/material/Grid";
-
-// Material Dashboard 2 React components
+import axios from "axios";
 import MDBox from "components/MDBox";
-
-// Material Dashboard 2 React example components
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-
-// Data
-import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
-import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
-
-// Dashboard components
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 import Projects from "layouts/dashboard/components/Projects";
+import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
+import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 function Dashboard() {
+  const [data, setData] = useState({
+    projectsCount: 0,
+    filesCount: 0,
+    formsCount: 0,
+  });
   const { sales, tasks } = reportsLineChartData;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      navigate("/authentication/sign-in");
+    } else {
+      fetchData();
+    }
+  }, [navigate]);
+
+  const fetchData = async () => {
+    try {
+      const projectsResponse = await axios.get(`${apiUrl}/projects/count`);
+      const filesResponse = await axios.get(`${apiUrl}/files/count`);
+      const formsResponse = await axios.get(`${apiUrl}/form/count`);
+
+      setData({
+        projectsCount: projectsResponse.data.count,
+        filesCount: filesResponse.data.count,
+        formsCount: formsResponse.data.count,
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3}>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={3}>
+          <Grid item xs={12} md={6} lg={4}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-                icon="weekend"
-                title="Bookings"
-                count={281}
+                icon="folder"
+                title="Projects"
+                count={data.projectsCount}
                 percentage={{
                   color: "success",
                   amount: "+55%",
-                  label: "than lask week",
+                  label: "than last week",
                 }}
               />
             </MDBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={3}>
+          <Grid item xs={12} md={6} lg={4}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                icon="leaderboard"
-                title="Today's Users"
-                count="2,300"
+                icon="insert_drive_file"
+                title="Files"
+                count={data.filesCount}
                 percentage={{
                   color: "success",
                   amount: "+3%",
@@ -72,32 +84,17 @@ function Dashboard() {
               />
             </MDBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={3}>
+          <Grid item xs={12} md={6} lg={4}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="success"
-                icon="store"
-                title="Revenue"
-                count="34k"
+                icon="description"
+                title="Forms"
+                count={data.formsCount}
                 percentage={{
                   color: "success",
                   amount: "+1%",
                   label: "than yesterday",
-                }}
-              />
-            </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="primary"
-                icon="person_add"
-                title="Followers"
-                count="+91"
-                percentage={{
-                  color: "success",
-                  amount: "",
-                  label: "Just updated",
                 }}
               />
             </MDBox>

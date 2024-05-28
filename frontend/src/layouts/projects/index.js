@@ -49,7 +49,11 @@ function Tables() {
                   Projects
                 </MDTypography>
                 <Link to="/create-project">
-                  <Button variant="contained" style={{ backgroundColor: "white" }}>
+                  <Button
+                    className="submit-button"
+                    variant="contained"
+                    style={{ backgroundColor: "white", color: "grey" }}
+                  >
                     Create Project +
                   </Button>
                 </Link>

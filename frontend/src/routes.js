@@ -40,7 +40,9 @@ import FileVerification from "layouts/FileVerification";
 import CreateFileVerificationForm from "layouts/FileVerification/addFileVerification";
 import Files from "layouts/Files";
 import FileForm from "layouts/Files/Fileform";
+import ApproveFormPage from "layouts/Files/approveform";
 import EditFileForm from "layouts/Files/editFile";
+import EditFormPage from "layouts/Files/editform";
 import FileFormData from "layouts/Files/fileFormdata";
 import ViewForm from "layouts/Files/‎ViewForm";
 import SignIn from "layouts/authentication/sign-in";
@@ -106,6 +108,22 @@ const routes = [
     icon: <Icon fontSize="small"></Icon>,
     route: "/view-form/:fileId",
     component: <ViewForm />,
+  },
+  {
+    type: "none",
+    name: "",
+    key: "",
+    icon: <Icon fontSize="small"></Icon>,
+    route: "/edit-fileform/:fileId",
+    component: <EditFormPage />,
+  },
+  {
+    type: "none",
+    name: "",
+    key: "",
+    icon: <Icon fontSize="small"></Icon>,
+    route: "/approve-form/:fileId",
+    component: <ApproveFormPage />,
   },
   {
     type: "none",

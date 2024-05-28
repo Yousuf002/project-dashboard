@@ -57,123 +57,151 @@ function ViewForm() {
               {/* Render each field according to your choice */}
               <TableRow>
                 <TableCell>Plot Size</TableCell>
-                <TableCell align="right">{formData.plotSizes.join(", ")}</TableCell>
+                <TableCell align="right">
+                  {formData.plotSizes ? formData.plotSizes.join(", ") : "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Name of Applicant</TableCell>
-                <TableCell align="right">{formData.personalInformation.name}</TableCell>
+                <TableCell align="right">{formData.personalInformation?.name || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>S/o, D/o, Wi/o</TableCell>
-                <TableCell align="right">{formData.personalInformation.s_dw_w}</TableCell>
+                <TableCell align="right">{formData.personalInformation?.s_dw_w || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Cnic</TableCell>
-                <TableCell align="right">{formData.personalInformation.cnic}</TableCell>
+                <TableCell align="right">{formData.personalInformation?.cnic || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Passport</TableCell>
-                <TableCell align="right">{formData.personalInformation.passport}</TableCell>
+                <TableCell align="right">
+                  {formData.personalInformation?.passport || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Current Mailing Address</TableCell>
                 <TableCell align="right">
-                  {formData.personalInformation.currentMailingAddress}
+                  {formData.personalInformation?.currentMailingAddress || "N/A"}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Permanent Mailing Address</TableCell>
                 <TableCell align="right">
-                  {formData.personalInformation.permanentMailingAddress}
+                  {formData.personalInformation?.permanentMailingAddress || "N/A"}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Mobile Number</TableCell>
-                <TableCell align="right">{formData.personalInformation.mobileNumber}</TableCell>
+                <TableCell align="right">
+                  {formData.personalInformation?.mobileNumber || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Office Number</TableCell>
-                <TableCell align="right">{formData.personalInformation.officeNumber}</TableCell>
+                <TableCell align="right">
+                  {formData.personalInformation?.officeNumber || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Email</TableCell>
-                <TableCell align="right">{formData.personalInformation.email}</TableCell>
+                <TableCell align="right">{formData.personalInformation?.email || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Name of Nominee</TableCell>
-                <TableCell align="right">{formData.nomineeInformation.nomineeName}</TableCell>
+                <TableCell align="right">
+                  {formData.nomineeInformation?.nomineeName || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>S/o, D/o, Wi/o (Nominee)</TableCell>
-                <TableCell align="right">{formData.nomineeInformation.nomineeS_dw_w}</TableCell>
+                <TableCell align="right">
+                  {formData.nomineeInformation?.nomineeS_dw_w || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Nominee Cnic</TableCell>
-                <TableCell align="right">{formData.nomineeInformation.nomineeCnic}</TableCell>
+                <TableCell align="right">
+                  {formData.nomineeInformation?.nomineeCnic || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Nominee Passport</TableCell>
-                <TableCell align="right">{formData.nomineeInformation.nomineePassport}</TableCell>
+                <TableCell align="right">
+                  {formData.nomineeInformation?.nomineePassport || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Relation</TableCell>
-                <TableCell align="right">{formData.nomineeInformation.relation}</TableCell>
+                <TableCell align="right">
+                  {formData.nomineeInformation?.relation || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Contact Number</TableCell>
-                <TableCell align="right">{formData.nomineeInformation.contactNumber}</TableCell>
+                <TableCell align="right">
+                  {formData.nomineeInformation?.contactNumber || "N/A"}
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Payment Methods</TableCell>
                 <TableCell align="right">
-                  {formData.modeOfPayment.paymentMethods.join(", ")}
+                  {formData.modeOfPayment?.paymentMethods?.join(", ") || "N/A"}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Amount 1</TableCell>
-                <TableCell align="right">{formData.modeOfPayment.amount1}</TableCell>
+                <TableCell align="right">{formData.modeOfPayment?.amount1 || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Date 1</TableCell>
-                <TableCell align="right">{formData.modeOfPayment.date1}</TableCell>
+                <TableCell align="right">{formData.modeOfPayment?.date1 || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Amount 2</TableCell>
-                <TableCell align="right">{formData.modeOfPayment.amount2}</TableCell>
+                <TableCell align="right">{formData.modeOfPayment?.amount2 || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Date 2</TableCell>
-                <TableCell align="right">{formData.modeOfPayment.date2}</TableCell>
+                <TableCell align="right">{formData.modeOfPayment?.date2 || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Manager&apos;s Signature</TableCell>
-                <TableCell align="right">{formData.signatures.manager}</TableCell>
+                <TableCell align="right">{formData.signatures?.manager || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Officer&apos;s Signature</TableCell>
-                <TableCell align="right">{formData.signatures.officer}</TableCell>
+                <TableCell align="right">{formData.signatures?.officer || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Applicant&apos;s Signature</TableCell>
-                <TableCell align="right">{formData.signatures.applicant}</TableCell>
+                <TableCell align="right">{formData.signatures?.applicant || "N/A"}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Applicant&apos;s CNIC</TableCell>
                 <TableCell align="right">
-                  <img src={formData.attachedFiles.applicantCnic} alt="Applicant's CNIC" />
+                  {formData.attachedFiles?.applicantCnic ? (
+                    <img src={formData.attachedFiles.applicantCnic} alt="Applicant's CNIC" />
+                  ) : (
+                    "N/A"
+                  )}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Nominee&apos;s CNIC</TableCell>
                 <TableCell align="right">
-                  <img src={formData.attachedFiles.nomineeCnic} alt="Nominee's CNIC" />
+                  {formData.attachedFiles?.nomineeCnic ? (
+                    <img src={formData.attachedFiles.nomineeCnic} alt="Nominee's CNIC" />
+                  ) : (
+                    "N/A"
+                  )}
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
       ) : (
-        <p>Loading...</p>
+        <p>...</p>
       )}
     </div>
   );

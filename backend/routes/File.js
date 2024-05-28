@@ -115,6 +115,14 @@ router.delete('/delete-file/:fileId', async (req, res) => {
   }
 });
 
-  
+router.get('/count', async (req, res) => {
+  try {
+    const count = await File.countDocuments();
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching project count:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
   
     module.exports = router;

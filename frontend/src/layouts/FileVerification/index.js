@@ -45,8 +45,12 @@ function FileVerification() {
                   File Verification
                 </MDTypography>
                 <Link to="/create-file-verification">
-                  <Button variant="contained" style={{ backgroundColor: "white" }}>
-                    Create File Verification +
+                  <Button
+                    className="submit-button"
+                    variant="contained"
+                    style={{ backgroundColor: "white", color: "grey" }}
+                  >
+                    Create Project +
                   </Button>
                 </Link>
               </MDBox>

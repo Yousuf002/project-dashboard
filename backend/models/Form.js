@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const FormDataSchema = new mongoose.Schema({
+const FormSchema = new mongoose.Schema({
   plotSizes: [String],
   personalInformation: {
     name: String,
@@ -22,11 +22,10 @@ const FormDataSchema = new mongoose.Schema({
     contactNumber: String,
   },
   modeOfPayment: {
-    paymentMethods: [String],
-    amount1: String,
-    date1: String,
-    amount2: String,
-    date2: String,
+    paymentMethod: [String],  // Updated to be an array of strings
+    amount: String,
+    chequeNumber: String,
+    bankReceiptNumber: String,
   },
   signatures: {
     manager: String,
@@ -34,12 +33,12 @@ const FormDataSchema = new mongoose.Schema({
     applicant: String,
   },
   attachedFiles: {
-    applicantCnic: String,
     passportImages: [String],
+    applicantCnic: String,
     nomineeCnic: String,
   },
-});
+}, { timestamps: true });
 
-const FormDataModel = mongoose.model('FormData', FormDataSchema);
+const formDatamodel = mongoose.model('Form', FormSchema);
 
-module.exports = FormDataModel;
+module.exports = formDatamodel;

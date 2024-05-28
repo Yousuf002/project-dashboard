@@ -1,48 +1,82 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 //require formDatamodel
-const formDatamodel = require("../models/Form");
-const FormDataModel = require("../models/Form");
+const FormDatamodel = require("../models/Form");
+const multer = require('multer');
+const path = require('path');
 const File = require("../models/File");
+const Joi = require('joi');
 const router = express.Router();
 
-router.post("/add-form-data/:fileId", async (req, res) => {
-  try {
-    // Extract form data from the request body
-    const formData = req.body;
 
-    // Get file ID from the URL parameters
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './files');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+// Define your route
+router.post('/add-form-data/:fileId', upload.single('file'), async (req, res) => {
+  try {
+    const formData = req.body;
     const fileId = req.params.fileId;
 
-    // Create a new document with the form data
-    const newFormData = new FormDataModel(formData);
+    // Parse JSON strings into objects
+    const parsedFormData = {
+      plotSizes: JSON.parse(formData.plotSizes),
+      personalInformation: JSON.parse(formData.personalInformation),
+      nomineeInformation: JSON.parse(formData.nomineeInformation),
+      modeOfPayment: JSON.parse(formData.modeOfPayment),
+      signatures: JSON.parse(formData.signatures),
+    };
 
-    // Save the new document to the database
-    const savedFormData = await newFormData.save();
+    console.log(parsedFormData);
 
-    // Find the file by its ID and update it with the form data ID
+    // Process attached files
+    const attachedFiles = {};
+    if (req.file) {
+      attachedFiles[req.file.fieldname] = req.file.path; // Adjust as per your form structure
+    }
+
+    parsedFormData.attachedFiles = attachedFiles;
+
+    // Find the file document by fileId
     const file = await File.findById(fileId);
     if (!file) {
       return res.status(404).json({ message: 'File not found' });
     }
-    file.FormData = savedFormData._id;
 
-    // Save the updated file document
+    // Check if form data already exists for this file
+    if (file.FormData) {
+      return res.status(400).json({ message: 'Form data already exists for this file' });
+    }
+
+    // Save form data to database
+    const newFormData = new FormDatamodel(parsedFormData);
+    const savedFormData = await newFormData.save();
+
+    // Update file document with form data ID
+    file.FormData = savedFormData._id;
     await file.save();
 
-    // Respond with success message and the saved form data
-    res.status(201).json({ message: "Form data saved successfully", formData: savedFormData });
+    // Respond with success message and saved form data
+    res.status(201).json({ message: 'Form data saved successfully', formData: savedFormData });
   } catch (error) {
-    console.error("Error saving form data:", error);
-    // Respond with error message
-    res.status(500).json({ error: "An error occurred while saving form data" });
+    console.error('Error saving form data:', error);
+    res.status(500).json({ error: 'An error occurred while saving form data' });
   }
 });
+
 router.get("/get-form-data", async (req, res) => {
   try {
     // Fetch form data from your database or any other source
     // For example:
-    const formData = await formDatamodel.findOne({
+    const formData = await FormDatamodel.findOne({
       /* Add any conditions */
     });
     res.status(200).json(formData);
@@ -64,7 +98,7 @@ router.get("/get-form-d/:fileId", async (req, res) => {
     }
 
     // Find the form entry using the form ID from the file entry
-    const form = await FormDataModel.findById(file.FormData);
+    const form = await FormDatamodel.findById(file.FormData);
 
     if (!form) {
       return res.status(404).json({ error: "Form not found" });
@@ -80,23 +114,41 @@ router.get("/get-form-d/:fileId", async (req, res) => {
   }
 });
 
-router.put("/edit-form-data:", async (req, res) => {
+router.put('/edit-form-data/:fileId', async (req, res) => {
+  const { fileId } = req.params;
+  const formData = req.body;
+
   try {
-    //get form id
-    const formId = req.params.id;
-    //get form data from request body
-    const formData = req.body;
-    //update form data
-    const updatedFormData = await formDatamodel.findByIdAndUpdate(
-      formId,
-      formData,
-      { new: true }
-    );
-    res.status(200).json(updatedFormData);
+    // Find the file by fileId
+    const file = await File.findById(fileId).populate('FormData');
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    // Get the formData ID from the file
+    const formDataId = file.FormData;
+console.log(file.FormData);
+    // Update the form data by its ID
+    const updatedForm = await FormDatamodel.findByIdAndUpdate(formDataId, formData, { new: true });
+
+    if (!updatedForm) {
+      return res.status(404).json({ message: 'Form not found' });
+    }
+
+    res.json(updatedForm);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed to update form data", error: error.message });
+    console.error('Error updating form data:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.get('/count', async (req, res) => {
+  try {
+    const count = await FormDatamodel.countDocuments();
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching project count:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 //export router

@@ -15,7 +15,7 @@ import Footer from "examples/Footer";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import { useEffect, useState } from "react";
-import { FaFile } from "react-icons/fa";
+import { FaDownload, FaFile } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -39,6 +39,15 @@ function FileFormData() {
 
   const openFile = (filePath) => {
     window.open(filePath, "_blank");
+  };
+
+  const downloadFile = (filePath) => {
+    const link = document.createElement("a");
+    link.href = filePath;
+    link.setAttribute("download", "");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -65,10 +74,14 @@ function FileFormData() {
                   Form Data
                 </MDTypography>
                 <Link
-                  to={!formData ? `/file-form/${fileId}` : `/edit-form/${fileId}`}
+                  to={!formData ? `/file-form/${fileId}` : `/edit-fileform/${fileId}`}
                   className="form-link"
                 >
-                  <Button variant="contained" style={{ backgroundColor: "white" }}>
+                  <Button
+                    variant="contained"
+                    className="submit-button"
+                    style={{ backgroundColor: "white", color: "grey" }}
+                  >
                     {!formData ? "Create Form +" : "Edit Form"}
                   </Button>
                 </Link>
@@ -76,9 +89,22 @@ function FileFormData() {
               <MDBox pt={3} px={2}>
                 {formData ? (
                   <>
+                    <Link to={`/approve-form/${fileId}`}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        style={{ color: "white", marginLeft: "0px" }}
+                      >
+                        Approve Form
+                      </Button>
+                    </Link>
                     <Link to={`/view-form/${fileId}`}>
-                      <Button variant="contained" color="white">
-                        View Form
+                      <Button
+                        className="submit-button"
+                        variant="contained"
+                        style={{ backgroundColor: "white", color: "grey", marginLeft: "5px" }}
+                      >
+                        view form
                       </Button>
                     </Link>
                     <TableContainer>
@@ -86,27 +112,39 @@ function FileFormData() {
                         <TableHead>
                           <TableRow>
                             <TableCell style={{ padding: "10px 20px" }}>
-                              Applicant Information
+                              <MDTypography variant="body1">Applicant Information</MDTypography>
                             </TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
                           <TableRow>
-                            <TableCell style={{ padding: "10px 20px" }}>Name</TableCell>
                             <TableCell style={{ padding: "10px 20px" }}>
-                              {formData.personalInformation?.name}
+                              <MDTypography variant="body1">Name</MDTypography>
+                            </TableCell>
+                            <TableCell style={{ padding: "10px 20px" }}>
+                              <MDTypography variant="body1">
+                                {formData.personalInformation?.name}
+                              </MDTypography>
                             </TableCell>
                           </TableRow>
                           <TableRow>
-                            <TableCell style={{ padding: "10px 20px" }}>CNIC</TableCell>
                             <TableCell style={{ padding: "10px 20px" }}>
-                              {formData.personalInformation?.cnic}
+                              <MDTypography variant="body1">CNIC</MDTypography>
+                            </TableCell>
+                            <TableCell style={{ padding: "10px 20px" }}>
+                              <MDTypography variant="body1">
+                                {formData.personalInformation?.cnic}
+                              </MDTypography>
                             </TableCell>
                           </TableRow>
                           <TableRow>
-                            <TableCell style={{ padding: "10px 20px" }}>Email</TableCell>
                             <TableCell style={{ padding: "10px 20px" }}>
-                              {formData.personalInformation?.email}
+                              <MDTypography variant="body1">Email</MDTypography>
+                            </TableCell>
+                            <TableCell style={{ padding: "10px 20px" }}>
+                              <MDTypography variant="body1">
+                                {formData.personalInformation?.email}
+                              </MDTypography>
                             </TableCell>
                           </TableRow>
                         </TableBody>
@@ -116,22 +154,33 @@ function FileFormData() {
                       <Table>
                         <TableHead>
                           <TableRow>
-                            <TableCell style={{ padding: "10px 20px" }}>Attachment Field</TableCell>
-                            <TableCell style={{ padding: "10px 20px" }}>File</TableCell>
+                            <TableCell style={{ padding: "10px 20px" }}>
+                              <MDTypography variant="body1">Attachment Field</MDTypography>
+                            </TableCell>
+                            <TableCell style={{ padding: "10px 20px" }}>
+                              <MDTypography variant="body1">File</MDTypography>
+                            </TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
                           {formData.attachedFiles &&
                             Object.entries(formData.attachedFiles).map(([field, value]) => (
                               <TableRow key={field}>
-                                <TableCell style={{ padding: "10px 20px" }}>{field}</TableCell>
+                                <TableCell style={{ padding: "10px 20px" }}>
+                                  <MDTypography variant="body1">{field}</MDTypography>
+                                </TableCell>
                                 <TableCell style={{ padding: "10px 20px" }}>
                                   {value && (
                                     <>
                                       <IconButton onClick={() => openFile(value)}>
                                         <FaFile />
                                       </IconButton>
-                                      <span>{value.label || ""}</span>
+                                      <IconButton onClick={() => downloadFile(value)}>
+                                        <FaDownload />
+                                      </IconButton>
+                                      <MDTypography variant="body1">
+                                        {value.label || ""}
+                                      </MDTypography>
                                     </>
                                   )}
                                 </TableCell>
@@ -142,7 +191,7 @@ function FileFormData() {
                     </TableContainer>
                   </>
                 ) : (
-                  <MDTypography variant="h6">...</MDTypography>
+                  <MDTypography variant="h6">Loading...</MDTypography>
                 )}
               </MDBox>
             </Card>

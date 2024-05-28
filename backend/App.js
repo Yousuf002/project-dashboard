@@ -4,18 +4,20 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors'); 
-
+const path = require('path');
 app.use(cors());
 app.use(express.json());
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const projectRouter = require('./routes/Project');
 const fileRouter = require('./routes/File');
 const fileverificationRouter = require('./routes/FileVerification')
 //import formouter
 const formRouter = require('./routes/Form');
+const userRouter = require('./routes/User')
 app.use('/projects', projectRouter);
 app.use('/files', fileRouter);
 app.use('/file-verification', fileverificationRouter);
+app.use('/user',userRouter);
 //use formrouter
 app.use('/form', formRouter);
 mongoose.connect(process.env.MONGODB_URL, {

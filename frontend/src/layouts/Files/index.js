@@ -84,7 +84,11 @@ function Files() {
                   Files
                 </MDTypography>
                 <Link to="/create-file">
-                  <Button variant="contained" style={{ backgroundColor: "white" }}>
+                  <Button
+                    className="submit-button"
+                    variant="contained"
+                    style={{ backgroundColor: "white", color: "grey" }}
+                  >
                     Create File +
                   </Button>
                 </Link>

@@ -4,17 +4,15 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
 import Typography from "@mui/material/Typography";
 import axios from "axios"; // You need to import axios
+import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import PIA from "./PIA.png";
 import BG from "./bg2.jpg";
-//import gtml2canvas
-import html2canvas from "html2canvas";
-//require cors
 const cors = require("cors");
-
+//import radio from react
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const RegistrationForm = () => {
@@ -25,6 +23,7 @@ const RegistrationForm = () => {
   const cnicBoxes = Array(15).fill("");
   const passportBoxes = Array(8).fill("");
   const amountBoxes = Array(10).fill("");
+
   useEffect(() => {
     const fetchFile = async () => {
       try {
@@ -36,6 +35,7 @@ const RegistrationForm = () => {
     };
     fetchFile();
   }, [fileId]);
+
   const [plotSizes, setplotSizes] = useState([]);
   const [personalInformation, setPersonalInformation] = useState({
     name: "",
@@ -59,11 +59,11 @@ const RegistrationForm = () => {
   });
 
   const [modeOfPayment, setModeOfPayment] = useState({
-    paymentMethods: [],
-    amount1: "",
-    date1: "",
-    amount2: "",
-    date2: "",
+    selectedMethod: "",
+    paymentMethod: [],
+    amount: "",
+    chequeNumber: "",
+    bankReceiptNumber: "",
   });
 
   const [signatures, setSignatures] = useState({
@@ -71,27 +71,38 @@ const RegistrationForm = () => {
     officer: "",
     applicant: "",
   });
+
   const [attachedFiles, setAttachedFiles] = useState({
     passportImages: [],
     applicantCnic: null,
     nomineeCnic: null,
   });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = {
-      plotSizes: plotSizes,
-      personalInformation: personalInformation,
-      nomineeInformation: nomineeInformation,
-      modeOfPayment: modeOfPayment,
-      signatures: signatures,
-      attachedFiles: attachedFiles,
-    };
+    const formData = new FormData();
+
+    // Append each field of formData object
+    formData.append("plotSizes", JSON.stringify(plotSizes));
+    formData.append("personalInformation", JSON.stringify(personalInformation));
+    formData.append("nomineeInformation", JSON.stringify(nomineeInformation));
+    formData.append("modeOfPayment", JSON.stringify(modeOfPayment));
+    formData.append("signatures", JSON.stringify(signatures));
+
+    // Append each attached file
+    attachedFiles.passportImages.forEach((file, index) => {
+      formData.append(`passportImages[${index}]`, file);
+    });
+    if (attachedFiles.applicantCnic) {
+      formData.append("applicantCnic", attachedFiles.applicantCnic);
+    }
+    if (attachedFiles.nomineeCnic) {
+      formData.append("nomineeCnic", attachedFiles.nomineeCnic);
+    }
 
     try {
-      await axios.post(`${apiUrl}/form/add-form-data/${fileId}`, formData);
-      //await axios.put(`${apiUrl}/files/update-file/${fileId}`, formData);
-      //console.log("Form data added to file:", response.data);
+      const response = await axios.post(`${apiUrl}/form/add-form-data/${fileId}`, formData);
       alert("Form submitted successfully!");
     } catch (error) {
       console.error("Error submitting form data:", error);
@@ -122,37 +133,46 @@ const RegistrationForm = () => {
     }
   };
 
-  // Update the handleMediaUpload function to store the file data
   const handleMediaUpload = (e, fileType) => {
     const file = e.target.files[0];
     const filePathOrURL = URL.createObjectURL(file);
 
-    // Check the fileType to update the state accordingly
     if (fileType === "passportPhoto") {
       setAttachedFiles((prevFiles) => ({
         ...prevFiles,
         passportImages: [...prevFiles.passportImages, filePathOrURL],
       }));
     } else if (fileType === "applicantCNIC") {
-      // Corrected key name
       setAttachedFiles((prevFiles) => ({
         ...prevFiles,
-        applicantCnic: filePathOrURL, // Corrected key name
+        applicantCnic: filePathOrURL,
       }));
     } else if (fileType === "nomineeCNIC") {
-      // Corrected key name
       setAttachedFiles((prevFiles) => ({
         ...prevFiles,
-        nomineeCnic: filePathOrURL, // Corrected key name
+        nomineeCnic: filePathOrURL,
       }));
     }
   };
-  //registrationFormContainer
+  const handlePaymentMethodChange = (event) => {
+    const { name, checked } = event.target;
+    setModeOfPayment((prevInfo) => {
+      let updatedpaymentMethod = [...prevInfo.paymentMethod];
+      if (checked) {
+        updatedpaymentMethod.push(name);
+      } else {
+        updatedpaymentMethod = updatedpaymentMethod.filter((method) => method !== name);
+      }
+      return {
+        ...prevInfo,
+        paymentMethod: updatedpaymentMethod,
+      };
+    });
+  };
   const formRef = useRef(null);
   const generatePDF = () => {
     const formElement = document.getElementById("registrationFormContainer");
 
-    // Check if formElement exists
     if (!formElement) {
       console.error("Form element not found.");
       return;
@@ -163,14 +183,13 @@ const RegistrationForm = () => {
     background.crossOrigin = "anonymous";
 
     const logo = new Image();
-    logo.src = PIA; // Adjust the path to your logo image
+    logo.src = PIA;
     logo.crossOrigin = "anonymous";
     const submitButtons = formElement.querySelectorAll(".submit-button");
     submitButtons.forEach((button) => {
       button.remove();
     });
 
-    // Hide the document section
     const documentSection = formElement.querySelector(".documents");
     if (documentSection) {
       documentSection.style.display = "none";
@@ -187,21 +206,20 @@ const RegistrationForm = () => {
       html2canvas(formElement).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
-        const pdfWidth = 210; // Width of A4 paper in mm
-        const pdfHeight = 297; // Height in mm
+        const pdfWidth = 210;
+        const pdfHeight = 297;
 
         const imgProps = pdf.getImageProperties(imgData);
         const imgHeight = (imgProps.height * pdfWidth - 30) / imgProps.width;
         let heightLeft = imgHeight;
         let position = 0;
 
-        pdf.addImage(background, "PNG", 0, 0, 210, 297); // Add background image on the first page
-        pdf.addImage(logo, "PNG", 10, 0, 30, 30); // Adjust the coordinates and dimensions as needed
+        pdf.addImage(background, "PNG", 0, 0, 210, 297);
+        pdf.addImage(logo, "PNG", 10, 0, 30, 30);
 
-        pdf.addImage(imgData, "PNG", 18, 48, pdfWidth - 40, imgHeight - 35); // Adjust the Y coordinate (50) to position the form content below the logo
+        pdf.addImage(imgData, "PNG", 18, 48, pdfWidth - 40, imgHeight - 11);
 
         heightLeft -= pdfHeight - 50;
-        //declare totalPages
         let totalPages = 1;
         while (heightLeft > 0 && totalPages < 3) {
           position = heightLeft - imgHeight;
@@ -211,12 +229,10 @@ const RegistrationForm = () => {
           totalPages++;
         }
 
-        // Draw signatures
         const signatureY = pdf.internal.pageSize.getHeight() - 40;
-        const fontSize = 10; // Adjust the font size as needed
+        const fontSize = 10;
 
         pdf.setFontSize(fontSize);
-        //change pdf text color
         pdf.setTextColor(128, 128, 128);
         pdf.text(
           "Applicant's Signature: _______________     Manager's Signature: _______________     Officer's Signature: _______________",
@@ -228,7 +244,6 @@ const RegistrationForm = () => {
           formElement.appendChild(button);
         });
 
-        //Show the document section again
         if (documentSection) {
           documentSection.style.display = "block";
         }
@@ -251,6 +266,7 @@ const RegistrationForm = () => {
           id="registrationFormContainer"
           onSubmit={handleSubmit}
           ref={formRef}
+          encType="multipart/form-data"
           style={{
             padding: "20px",
             backgroundColor: "transparent",
@@ -323,7 +339,7 @@ const RegistrationForm = () => {
             <input
               type="tel"
               placeholder=""
-              value={nomineeInformation.cnic}
+              value={personalInformation.cnic}
               onChange={handleInputChange("personalInformation", "cnic")}
               style={{
                 width: "100%",
@@ -338,7 +354,7 @@ const RegistrationForm = () => {
             <input
               type="tel"
               placeholder=""
-              value={nomineeInformation.cnic}
+              value={personalInformation.passport}
               onChange={handleInputChange("personalInformation", "passport")}
               style={{
                 width: "100%",
@@ -462,7 +478,7 @@ const RegistrationForm = () => {
             <input
               type="tel"
               placeholder=""
-              value={nomineeInformation.cnic}
+              value={nomineeInformation.nomineeCnic}
               onChange={handleInputChange("nomineeInformation", "nomineeCnic")}
               style={{
                 width: "100%",
@@ -477,7 +493,7 @@ const RegistrationForm = () => {
             <input
               type="tel"
               placeholder=""
-              value={nomineeInformation.cnic}
+              value={nomineeInformation.nomineePassport}
               onChange={handleInputChange("nomineeInformation", "nomineePassport")}
               style={{
                 width: "100%",
@@ -523,92 +539,121 @@ const RegistrationForm = () => {
           <Box sx={{ my: 2 }}>
             <Typography variant="h5">Mode of Payment</Typography>
             <FormGroup row>
-              {["Cash", "Cheque", "Deposit", "Other"].map((method) => (
-                <FormControlLabel
-                  key={method}
-                  control={
-                    <Checkbox
-                      name={method}
-                      checked={modeOfPayment.paymentMethods.includes(method)}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        setModeOfPayment((prev) => ({
-                          ...prev,
-                          paymentMethods: checked
-                            ? [...prev.paymentMethods, method]
-                            : prev.paymentMethods.filter((item) => item !== method),
-                        }));
-                      }}
-                    />
-                  }
-                  label={method}
-                />
-              ))}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={modeOfPayment.paymentMethod.includes("cheque")}
+                    onChange={(e) => handlePaymentMethodChange(e, "cheque")}
+                    name="cheque"
+                  />
+                }
+                label="Cheque"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={modeOfPayment.paymentMethod.includes("bank")}
+                    onChange={(e) => handlePaymentMethodChange(e, "bank")}
+                    name="bank"
+                  />
+                }
+                label="Bank"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={modeOfPayment.paymentMethod.includes("cash")}
+                    onChange={(e) => handlePaymentMethodChange(e, "cash")}
+                    name="cash"
+                  />
+                }
+                label="Cash"
+              />
             </FormGroup>
-            <div style={{ display: "flex", marginBottom: "20px" }}>
-              <label>Amount</label>
-              <input
-                type="text"
-                placeholder=""
-                value={modeOfPayment.amount1}
-                onChange={handleInputChange("modeOfPayment", "amount1")}
-                style={{
-                  flex: "1",
-                  height: "43px",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                  marginRight: "10px",
-                }}
-              />
-              <label>Date</label>
-              <input
-                type="date"
-                placeholder=""
-                value={modeOfPayment.date1}
-                onChange={handleInputChange("modeOfPayment", "date1")}
-                style={{
-                  flex: "1",
-                  height: "43px",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                }}
-              />
-            </div>
-            <div style={{ display: "flex" }}>
-              <label>Amount</label>
-              <input
-                type="text"
-                placeholder="Amount"
-                value={modeOfPayment.amount2}
-                onChange={handleInputChange("modeOfPayment", "amount2")}
-                style={{
-                  flex: "1",
-                  height: "43px",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                  marginRight: "10px",
-                }}
-              />
-              <label>Date</label>
-              <input
-                type="date"
-                placeholder="Date"
-                value={modeOfPayment.date2}
-                onChange={handleInputChange("modeOfPayment", "date2")}
-                style={{
-                  flex: "1",
-                  height: "43px",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                }}
-              />
-            </div>
-          </Box>
 
+            {modeOfPayment.paymentMethod.includes("cheque") && (
+              <label>
+                Cheque Number:
+                <input
+                  type="text"
+                  value={modeOfPayment.chequeNumber}
+                  onChange={handleInputChange("modeOfPayment", "chequeNumber")}
+                />
+              </label>
+            )}
+            {modeOfPayment.paymentMethod.includes("bank") && (
+              <label>
+                Bank Receipt Number:
+                <input
+                  type="text"
+                  value={modeOfPayment.bankReceiptNumber}
+                  onChange={handleInputChange("modeOfPayment", "bankReceiptNumber")}
+                />
+              </label>
+            )}
+          </Box>
+          <div style={{ display: "flex", marginBottom: "20px" }}>
+            <label>Amount</label>
+            <input
+              type="text"
+              placeholder=""
+              value={modeOfPayment.amount1}
+              onChange={handleInputChange("modeOfPayment", "amount1")}
+              style={{
+                flex: "1",
+                height: "43px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginRight: "10px",
+              }}
+            />
+            <label>Date</label>
+            <input
+              type="date"
+              placeholder=""
+              value={modeOfPayment.date1}
+              onChange={handleInputChange("modeOfPayment", "date1")}
+              style={{
+                flex: "1",
+                height: "43px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex" }}>
+            <label>Amount</label>
+            <input
+              type="text"
+              placeholder="Amount"
+              value={modeOfPayment.amount2}
+              onChange={handleInputChange("modeOfPayment", "amount2")}
+              style={{
+                flex: "1",
+                height: "43px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                marginRight: "10px",
+              }}
+            />
+            <label>Date</label>
+            <input
+              type="date"
+              placeholder="Date"
+              value={modeOfPayment.date2}
+              onChange={handleInputChange("modeOfPayment", "date2")}
+              style={{
+                flex: "1",
+                height: "43px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+              }}
+            />
+          </div>
           <Box sx={{ my: 2 }} className="documents">
             <Typography variant="h5">Documents to be Attached</Typography>
             <ul style={{ fontSize: "14px" }}>
@@ -653,6 +698,65 @@ const RegistrationForm = () => {
       </Box>
     </div>
   );
+  function handleCnicChange(e, index) {
+    const { value } = e.target;
+    if (/^\d*$/.test(value)) {
+      const updatedCnic = personalInformation.cnic.split("");
+      updatedCnic[index] = value;
+      setPersonalInformation((prevInfo) => ({
+        ...prevInfo,
+        cnic: updatedCnic.join(""),
+      }));
+    }
+  }
+
+  function handlePassportChange(e, index) {
+    const { value } = e.target;
+    if (/^[a-zA-Z0-9]*$/.test(value)) {
+      const updatedPassport = personalInformation.passport.split("");
+      updatedPassport[index] = value;
+      setPersonalInformation((prevInfo) => ({
+        ...prevInfo,
+        passport: updatedPassport.join(""),
+      }));
+    }
+  }
+
+  function handleNomineeCnicChange(e, index) {
+    const { value } = e.target;
+    if (/^\d*$/.test(value)) {
+      const updatedNomineeCnic = nomineeInformation.nomineeCnic.split("");
+      updatedNomineeCnic[index] = value;
+      setNomineeInformation((prevInfo) => ({
+        ...prevInfo,
+        nomineeCnic: updatedNomineeCnic.join(""),
+      }));
+    }
+  }
+
+  function handleNomineePassportChange(e, index) {
+    const { value } = e.target;
+    if (/^[a-zA-Z0-9]*$/.test(value)) {
+      const updatedNomineePassport = nomineeInformation.nomineePassport.split("");
+      updatedNomineePassport[index] = value;
+      setNomineeInformation((prevInfo) => ({
+        ...prevInfo,
+        nomineePassport: updatedNomineePassport.join(""),
+      }));
+    }
+  }
+
+  function handleAmountChange(e, index) {
+    const { value } = e.target;
+    if (/^\d*$/.test(value)) {
+      const updatedAmount = modeOfPayment.amount.split("");
+      updatedAmount[index] = value;
+      setModeOfPayment((prevInfo) => ({
+        ...prevInfo,
+        amount: updatedAmount.join(""),
+      }));
+    }
+  }
 };
 
 export default RegistrationForm;
