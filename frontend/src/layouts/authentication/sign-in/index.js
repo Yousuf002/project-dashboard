@@ -27,13 +27,13 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL;
+  
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 

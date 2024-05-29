@@ -57,7 +57,7 @@ router.post('/add-form-data/:fileId', upload.single('file'), async (req, res) =>
       return res.status(400).json({ message: 'Form data already exists for this file' });
     }
      //change file status to inProcess
-     file.FileStatus = 'inProcess';
+     file.FileStatus = 'In Process';
     // Save form data to database
     const newFormData = new FormDatamodel(parsedFormData);
     const savedFormData = await newFormData.save();
