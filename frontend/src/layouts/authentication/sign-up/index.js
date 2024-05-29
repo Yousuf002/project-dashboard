@@ -19,30 +19,33 @@ import CoverLayout from "layouts/authentication/components/CoverLayout";
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 
 function Cover() {
+  console.log("Component loaded"); // This should log when the component mounts
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mobile, setMobile] = useState(""); // Add state for mobile
+  const [mobile, setMobile] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (event) => {
+    event.preventDefault(); // Prevent default form submission
+    console.log("Sign up button clicked"); // This should log when the button is clicked
+
     if (!agreeTerms) {
       alert("You must agree to the terms and conditions.");
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/user/signup", {
+      const response = await axios.post(`${apiUrl}/user/signup`, {
         name,
         email,
         password,
-        mobile, // Include mobile in the request body
+        mobile,
       });
-      // Handle success
       alert(response.data.message);
-      navigate("/authentication/sign-in"); // Redirect to the sign-in page
+      navigate("/authentication/sign-in");
     } catch (error) {
-      // Handle error
       alert(error.response.data.error);
     }
   };
@@ -69,7 +72,7 @@ function Cover() {
           </MDTypography>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
-          <MDBox component="form" role="form">
+          <MDBox component="form" role="form" onSubmit={handleSignUp}>
             <MDBox mb={2}>
               <MDInput
                 type="text"
@@ -103,7 +106,7 @@ function Cover() {
             <MDBox mb={2}>
               <MDInput
                 type="text"
-                label="Mobile" // Add mobile input field
+                label="Mobile"
                 variant="standard"
                 fullWidth
                 value={mobile}
@@ -132,11 +135,11 @@ function Cover() {
                 Terms and Conditions
               </MDTypography>
             </MDBox>
-            <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth onClick={handleSignUp}>
-                sign up
-              </MDButton>
-            </MDBox>
+
+            <MDButton variant="gradient" color="info" fullWidth type="submit">
+              sign up
+            </MDButton>
+
             <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
                 Already have an account?{" "}

@@ -34,6 +34,7 @@ router.post('/add-form-data/:fileId', upload.single('file'), async (req, res) =>
       modeOfPayment: JSON.parse(formData.modeOfPayment),
       signatures: JSON.parse(formData.signatures),
     };
+   
 
     console.log(parsedFormData);
 
@@ -55,7 +56,8 @@ router.post('/add-form-data/:fileId', upload.single('file'), async (req, res) =>
     if (file.FormData) {
       return res.status(400).json({ message: 'Form data already exists for this file' });
     }
-
+     //change file status to inProcess
+     file.FileStatus = 'inProcess';
     // Save form data to database
     const newFormData = new FormDatamodel(parsedFormData);
     const savedFormData = await newFormData.save();

@@ -33,13 +33,14 @@ function Basic() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/user/signin", { email, password });
+      const response = await axios.post(`${apiUrl}/user/signin`, { email, password });
       console.log(response.data);
       sessionStorage.setItem("token", response.data.token);
       // Handle success (e.g., store token, navigate to another page)
